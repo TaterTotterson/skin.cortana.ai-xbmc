@@ -115,12 +115,12 @@
 					<content>
 						<item>
 							<label>Cortana</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\default.py)</onclick>
+							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Cortana Quick Asks</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\default.py,QuickAsks)</onclick>
+							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py,QuickAsks)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
