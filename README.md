@@ -1,7 +1,15 @@
 # cortanaOS - A modern, sleek, social "Xbox 180" style dashboard for XBMC4Xbox.
 ## Requires [Cortana Server Browser](https://github.com/faithvoid/script.cortanaserverbrowser), 
 
-<img width="960" height="720" alt="IMG_0123" src="https://github.com/user-attachments/assets/f37cfde0-7b83-43fd-8a5c-351dc30507e7" />
+## Cortana AI Screenshots:
+[screenshot000.bmp](https://github.com/user-attachments/files/23696045/screenshot000.bmp)
+[screenshot001.bmp](https://github.com/user-attachments/files/23696044/screenshot001.bmp)
+[screenshot002.bmp](https://github.com/user-attachments/files/23696043/screenshot002.bmp)
+[screenshot003.bmp](https://github.com/user-attachments/files/23696042/screenshot003.bmp)
+[screenshot004.bmp](https://github.com/user-attachments/files/23696041/screenshot004.bmp)
+[screenshot005.bmp](https://github.com/user-attachments/files/23696040/screenshot005.bmp)
+[screenshot006.bmp](https://github.com/user-attachments/files/23696039/screenshot006.bmp)
+
 
 ## Menu Screenshots:
 ![cortanaOS1](screenshots/1.png)
