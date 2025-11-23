@@ -124,8 +124,18 @@
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
-							<label>Servers</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\default.py)</onclick>
+							<label>Insignia</label>
+							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py)</onclick>
+							<onclick>Dialog.Close(shutdownmenu)</onclick>
+						</item>
+						<item>
+							<label>XlinkKai</label>
+							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py)</onclick>
+							<onclick>Dialog.Close(shutdownmenu)</onclick>
+						</item>
+						<item>
+							<label>Add Games for Online Play</label>
+							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\installgames.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
