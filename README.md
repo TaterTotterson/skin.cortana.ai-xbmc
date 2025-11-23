@@ -1,4 +1,6 @@
 # Cortana AI - A modern, sleek, "Xbox 180" style dashboard for XBMC4Xbox with Cortana AI Capabilities
+> **Note:** This skin requires the Tater AI assistant to function.  
+> Get Tater here: https://github.com/TaterTotterson/Tater
 
 ## Cortana AI Screenshots:
 <img width="1280" height="720" alt="screenshot000" src="https://github.com/user-attachments/assets/cdbd189f-23f2-4ab0-a64a-ecb486f2ba82" />
