@@ -68,10 +68,11 @@
 - Per-page RSS feeds! The Cortana blade shows Insignia & XLink session/server/event information & the Settings menu shows Cortana news by default, and the Games & Media blades are for your own RSS feeds! (These can all easily be modified in RssFeeds.xml in your UserData folder)
 
 ## How to install:
-- Download latest release from the Releases category (if there isn't a release .zip, do NOT clone this skin from GitHub and expect support! The repo is ALWAYS under development so things may be broken even if most features work, especially script-related functionality!)
-- Copy "Cortana" to "Q:\skins\"
+- git clone https://github.com/TaterTotterson/skin.cortana.ai-xbmc.git
+- Copy "Cortana" to "\skins\"
 - Change your skin to Cortana in the XBMC Appearance menu.
-- ???
+- Edit /scripts/cortana/default.py line 34 CORTANA_API_URL with the IP or your tater assistant
+- (Optional) edit/add QUICK_ASK_ITEMS 
 - Profit!
 
 ## Credits:
