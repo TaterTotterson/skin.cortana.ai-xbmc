@@ -70,9 +70,9 @@
 ## How to install:
 - git clone https://github.com/TaterTotterson/skin.cortana.ai-xbmc.git
 - Copy "Cortana" to "\skins\"
-- Change your skin to Cortana in the XBMC Appearance menu.
 - Edit /scripts/cortana/default.py line 34 CORTANA_API_URL with the IP or your tater assistant
 - (Optional) edit/add QUICK_ASK_ITEMS 
+- Change your skin to Cortana in the XBMC Appearance menu.
 - Profit!
 
 ## Credits:
