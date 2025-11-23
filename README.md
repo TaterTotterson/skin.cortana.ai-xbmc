@@ -1,4 +1,4 @@
-# Cortana AI - A modern, sleek, "Xbox 180" style dashboard for XBMC4Xbox. With Cortana AI Capabilities
+# Cortana AI - A modern, sleek, "Xbox 180" style dashboard for XBMC4Xbox with Cortana AI Capabilities
 
 ## Cortana AI Screenshots:
 <img width="1280" height="720" alt="screenshot000" src="https://github.com/user-attachments/assets/cdbd189f-23f2-4ab0-a64a-ecb486f2ba82" />
