@@ -33,12 +33,6 @@
 ![Cortana Chat - 3](screenshots/cc3.png)
 ![Cortana Chat - 4](screenshots/cc4.png)
 
-## Themes
-### Aero (WIP)
-![Aero](screenshots/aero-test.png)
-### Aero Lite (WIP)
-![Aero Lite](screenshots/aerolite-test.png)
-
 ## Features:
 - Replaced the broken Weather page with **Cortana**, a series of scripts that allows you to view & join active Insignia/XLink Kai sessions, events, view server statistics, get new match notifications, get Cortana/Insignia/XLink Kai news, check your Insignia DNS settings, send/receive messages, and more!
 
