@@ -1,4 +1,4 @@
-# cortanaOS - A modern, sleek, Cortana AI Capable "Xbox 180" style dashboard for XBMC4Xbox. With Cortana AI Capabilities
+# cortanaOS - A modern, sleek, "Xbox 180" style dashboard for XBMC4Xbox. With Cortana AI Capabilities
 ## Requires [Cortana Server Browser](https://github.com/faithvoid/script.cortanaserverbrowser), 
 
 ## Cortana AI Screenshots:
