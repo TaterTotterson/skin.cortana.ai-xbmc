@@ -8,6 +8,7 @@
 #   - Popup window with reply
 #
 
+import os
 import socket
 import sys
 import xbmc
@@ -33,6 +34,8 @@ except NameError:
 # Now talks to the dedicated XBMC platform on port 8790.
 CORTANA_API_URL = "http://10.4.20.173:8790/tater-xbmc/v1/message"
 HTTP_TIMEOUT_SECONDS = 15
+DEFAULT_API_KEY = ""
+SETTINGS_FILE = os.path.join(xbmc.translatePath('special://profile'), 'cortana_chat_settings.json')
 
 # Shared quick-ask prompts (used by both full chat and QuickAsks-only mode)
 QUICK_ASK_ITEMS = [
@@ -117,6 +120,68 @@ def _show_popup(dialog, title, text):
     dialog.ok(title, line1, line2, line3)
 
 
+def _load_chat_settings():
+    settings = {"api_key": DEFAULT_API_KEY}
+    try:
+        if not os.path.exists(SETTINGS_FILE):
+            return settings
+        f = open(SETTINGS_FILE, "r")
+        try:
+            raw = f.read()
+        finally:
+            f.close()
+        if not raw:
+            return settings
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            settings["api_key"] = str(parsed.get("api_key") or "").strip()
+    except Exception as e:
+        _log("Settings load failed: %s" % e)
+    return settings
+
+
+def _save_chat_settings(settings):
+    try:
+        folder = os.path.dirname(SETTINGS_FILE)
+        if folder and not os.path.exists(folder):
+            os.makedirs(folder)
+        f = open(SETTINGS_FILE, "w")
+        try:
+            f.write(json.dumps(settings))
+        finally:
+            f.close()
+        return True
+    except Exception as e:
+        _log("Settings save failed: %s" % e)
+        return False
+
+
+def _get_api_key():
+    settings = _load_chat_settings()
+    return str(settings.get("api_key") or "").strip()
+
+
+def _set_api_key(dialog):
+    settings = _load_chat_settings()
+    current = str(settings.get("api_key") or "").strip()
+
+    kb = xbmc.Keyboard(current, "Set Tater API Key (blank clears)", True)
+    kb.doModal()
+    if not kb.isConfirmed():
+        return
+
+    new_key = kb.getText().strip()
+    settings["api_key"] = new_key
+
+    if _save_chat_settings(settings):
+        if new_key:
+            xbmc.executebuiltin("Notification(Cortana Chat, API key saved, 2200)")
+        else:
+            xbmc.executebuiltin("Notification(Cortana Chat, API key cleared, 2200)")
+    else:
+        dialog.ok("Cortana Chat", "Failed to save API key.")
+
+
 def call_cortana(message):
     """
     Send a message to the XBMC bridge endpoint and return the reply text.
@@ -140,10 +205,15 @@ def call_cortana(message):
     _log("Sending to Cortana URL: %s" % CORTANA_API_URL)
     _log("Payload: %s" % data)
 
+    headers = {"Content-Type": "application/json"}
+    api_key = _get_api_key()
+    if api_key:
+        headers["X-Tater-Token"] = api_key
+
     req = urllib2.Request(
         CORTANA_API_URL,
         data,
-        {"Content-Type": "application/json"}
+        headers
     )
 
     try:
@@ -171,6 +241,16 @@ def call_cortana(message):
             body = e.read()
         except Exception:
             body = ""
+
+        if e.code in (401, 403):
+            if _get_api_key():
+                hint = "Invalid API key. Open Cortana Chat and choose Set API Key."
+            else:
+                hint = "API key required. Open Cortana Chat and choose Set API Key."
+            if body:
+                return "HTTP %s\n%s\n%s" % (e.code, body, hint)
+            return "HTTP %s\n%s" % (e.code, hint)
+
         return "HTTP %s\n%s" % (e.code, body)
 
     except urllib2.URLError as e:
@@ -213,7 +293,8 @@ def display_cortana_chat():
     while True:
         items = [
             "Ask Cortana…",
-            "Quick Ask →"
+            "Quick Ask →",
+            "Set API Key…"
         ]
 
         if history:
@@ -274,6 +355,13 @@ def display_cortana_chat():
             if len(history) > 60:
                 history = history[:60]
 
+            continue
+
+        # ------------------------------
+        # API key setup
+        # ------------------------------
+        if choice == 2:
+            _set_api_key(dialog)
             continue
 
 
