@@ -70,6 +70,7 @@
 ## How to install:
 - git clone https://github.com/TaterTotterson/skin.cortana.ai-xbmc.git
 - Copy "Cortana" to "\skins\"
+- Upload `BGVideo.avi` to the latest GitHub release assets. On first startup, Cortana downloads it to `E:\BGVideo\BGVideo.avi` and then plays it as the default animated background.
 - Edit /scripts/cortana/default.py line 34 CORTANA_API_URL with the IP or your tater assistant
 - (Optional) edit/add QUICK_ASK_ITEMS 
 - Change your skin to Cortana in the XBMC Appearance menu.
