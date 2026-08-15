@@ -5,7 +5,7 @@ import re
 import requests
 
 # Path to the includes.xml file
-XML_FILE_PATH = "Q:\\skin\\Cortana\\720p\\includes.xml"
+XML_FILE_PATH = "Q:\\skin\\skin.cortana.ai\\720p\\includes.xml"
 
 class EditGamercardDialog:
     def __init__(self):

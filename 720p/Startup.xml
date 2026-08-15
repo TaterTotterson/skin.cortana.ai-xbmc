@@ -13,7 +13,6 @@
 		</control>
 		<control type="button" id="10">
 			<description>trigger</description>
-			<onfocus>RunScript(Q:\skin\Cortana\scripts\bgvideo.py)</onfocus>
 			<onfocus>ReplaceWindow(Home)</onfocus>
 			<texturenofocus>-</texturenofocus>
 			<texturefocus>-</texturefocus>

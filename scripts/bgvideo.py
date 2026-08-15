@@ -12,11 +12,16 @@ import xbmcgui
 VIDEO_DIR = "E:\\BGVideo"
 VIDEO_PATH = "E:\\BGVideo\\BGVideo.avi"
 TEMP_VIDEO_PATH = VIDEO_PATH + ".part"
-VIDEO_URL = "https://github.com/TaterTotterson/skin.cortana.ai-xbmc/releases/latest/download/BGVideo.avi"
+VIDEO_URLS = [
+    "http://10.4.20.210:8501/api/portals/xbmc_portal/api/tater-xbmc/v1/bgvideo.avi",
+    "https://github.com/TaterTotterson/skin.cortana.ai-xbmc/releases/latest/download/BGVideo.avi",
+]
 
-DOWNLOAD_TIMEOUT_SECONDS = 30
+DOWNLOAD_TIMEOUT_SECONDS = 60
 DOWNLOAD_CHUNK_BYTES = 64 * 1024
 MIN_VIDEO_BYTES = 10 * 1024 * 1024
+HOME_REFOCUS_ATTEMPTS = 4
+HOME_REFOCUS_DELAY_SECONDS = 0.5
 
 
 def log(message):
@@ -90,7 +95,7 @@ def remove_temp_video():
         log("Unable to remove temp download: %s" % error)
 
 
-def download_video():
+def download_video_from_url(video_url):
     if not ensure_video_dir():
         return False
 
@@ -104,7 +109,7 @@ def download_video():
 
     try:
         socket.setdefaulttimeout(DOWNLOAD_TIMEOUT_SECONDS)
-        request = urllib2.Request(VIDEO_URL)
+        request = urllib2.Request(video_url)
         request.add_header("User-Agent", "XBMC4Xbox Cortana Skin")
         response = urllib2.urlopen(request)
 
@@ -183,8 +188,20 @@ def download_video():
             remove_temp_video()
 
 
+def download_video():
+    for video_url in VIDEO_URLS:
+        log("Trying download URL: %s" % video_url)
+        if download_video_from_url(video_url):
+            return True
+
+    log("All BGVideo download URLs failed")
+    return False
+
+
 def play_video():
-    xbmc.executebuiltin("PlayMedia(%s, noresume)" % VIDEO_PATH)
+    # The ",1" argument starts video playback without switching to fullscreen.
+    log("Starting background video in windowed mode: %s" % VIDEO_PATH)
+    xbmc.executebuiltin("PlayMedia(%s,1,noresume)" % VIDEO_PATH)
 
     player = xbmc.Player()
     wait_time = 0.0
@@ -194,13 +211,14 @@ def play_video():
         time.sleep(0.1)
         wait_time += 0.1
 
-    time.sleep(0.5)
-    xbmc.executebuiltin("ActivateWindow(Home)")
+    for _ in range(HOME_REFOCUS_ATTEMPTS):
+        time.sleep(HOME_REFOCUS_DELAY_SECONDS)
+        xbmc.executebuiltin("ActivateWindow(Home)")
 
 
 def main():
     if not has_video():
-        log("%s not found; downloading from release asset" % VIDEO_PATH)
+        log("%s not found; downloading from configured source" % VIDEO_PATH)
         if not download_video():
             return
 

@@ -1,3 +1,12 @@
+[B]Version 2.12[/B]
+
+- Added first-run BGVideo download support from Tater with GitHub release asset fallback.
+- Added Home-owned background video startup so BGVideo stays behind the skin instead of opening fullscreen at boot.
+- Added the Cortana skin overlay with Tater-generated quick replies.
+- Added Cortana TTS playback and pauses the background video while Cortana is speaking.
+- Updated Cortana API calls to the XBMC portal endpoint on the standard Tater port.
+- Updated bundled skin script paths for the skin.cortana.ai install folder.
+
 [B]Version 1.0.1 (xbs)[/B]
 
 - Fixed now playing music visualization selection

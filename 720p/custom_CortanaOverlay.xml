@@ -1,0 +1,292 @@
+<window id="9016">
+<type>dialog</type>
+	<defaultcontrol>2101</defaultcontrol>
+	<coordinates>
+		<system>1</system>
+		<posx>730</posx>
+		<posy>0</posy>
+	</coordinates>
+	<controls>
+		<control type="group">
+			<animation type="WindowOpen">
+				<effect type="fade" start="0" end="100" time="100" />
+				<effect type="slide" start="550,0" end="0,0" delay="100" time="400" tween="quadratic" easing="out" />
+			</animation>
+			<animation type="WindowClose">
+				<effect type="slide" start="0,0" end="550,0" delay="DialogVisibleFadeAnimationSpeed" time="400" tween="quadratic" easing="in" />
+				<effect type="fade" start="100" end="0" delay="800" time="100" />
+			</animation>
+			<control type="image">
+				<posx>130</posx>
+				<posy>-40</posy>
+				<width>180</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-runner-right.png</texture>
+			</control>
+			<control type="image">
+				<posx>310</posx>
+				<posy>-40</posy>
+				<width>970</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-runner-right-edge.png</texture>
+			</control>
+			<control type="label" id="411">
+				<description>Header label</description>
+				<posx>200</posx>
+				<label>Cortana</label>
+				<include>DialogHeaderTextCommons</include>
+			</control>
+			<control type="group">
+				<posx>180</posx>
+				<animation effect="fade" delay="500" time="DialogVisibleFadeAnimationSpeed">WindowOpen</animation>
+				<animation effect="fade" delay="100" time="DialogVisibleFadeAnimationSpeed">WindowClose</animation>
+				<control type="image">
+					<description>Top divider</description>
+					<posx>0</posx>
+					<posy>139</posy>
+					<width>340</width>
+					<height>2</height>
+					<texture>divider.png</texture>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>154</posy>
+					<width>290</width>
+					<height>26</height>
+					<font>font12</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>orange</textcolor>
+					<label>Cortana says</label>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>186</posy>
+					<width>300</width>
+					<height>28</height>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<label>$INFO[Window(10000).Property(Cortana.Reply1)]</label>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>214</posy>
+					<width>300</width>
+					<height>28</height>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<label>$INFO[Window(10000).Property(Cortana.Reply2)]</label>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>242</posy>
+					<width>300</width>
+					<height>28</height>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<label>$INFO[Window(10000).Property(Cortana.Reply3)]</label>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>270</posy>
+					<width>300</width>
+					<height>28</height>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<label>$INFO[Window(10000).Property(Cortana.Reply4)]</label>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>298</posy>
+					<width>300</width>
+					<height>28</height>
+					<font>font13</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<label>$INFO[Window(10000).Property(Cortana.Reply5)]</label>
+				</control>
+				<control type="image">
+					<description>Middle divider</description>
+					<posx>0</posx>
+					<posy>336</posy>
+					<width>340</width>
+					<height>2</height>
+					<texture>divider.png</texture>
+				</control>
+				<control type="label">
+					<posx>25</posx>
+					<posy>352</posy>
+					<width>290</width>
+					<height>26</height>
+					<font>font12</font>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>orange</textcolor>
+					<label>Quick replies</label>
+				</control>
+				<control type="button" id="2101">
+					<posx>0</posx>
+					<posy>386</posy>
+					<width>340</width>
+					<height>44</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<textoffsetx>18</textoffsetx>
+					<label>$INFO[Window(10000).Property(Cortana.Quick1)]</label>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2101</onright>
+					<onup>2205</onup>
+					<ondown>2102</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick1)</onclick>
+				</control>
+				<control type="button" id="2102">
+					<posx>0</posx>
+					<posy>434</posy>
+					<width>340</width>
+					<height>44</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<textoffsetx>18</textoffsetx>
+					<label>$INFO[Window(10000).Property(Cortana.Quick2)]</label>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2102</onright>
+					<onup>2101</onup>
+					<ondown>2103</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick2)</onclick>
+				</control>
+				<control type="button" id="2103">
+					<posx>0</posx>
+					<posy>482</posy>
+					<width>340</width>
+					<height>44</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<textoffsetx>18</textoffsetx>
+					<label>$INFO[Window(10000).Property(Cortana.Quick3)]</label>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2103</onright>
+					<onup>2102</onup>
+					<ondown>2201</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick3)</onclick>
+				</control>
+				<control type="button" id="2201">
+					<posx>0</posx>
+					<posy>540</posy>
+					<width>165</width>
+					<height>40</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<align>center</align>
+					<label>Ask</label>
+					<onleft>2202</onleft>
+					<onright>2202</onright>
+					<onup>2103</onup>
+					<ondown>2203</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Ask)</onclick>
+				</control>
+				<control type="button" id="2202">
+					<posx>175</posx>
+					<posy>540</posy>
+					<width>165</width>
+					<height>40</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<align>center</align>
+					<label>Presets</label>
+					<onleft>2201</onleft>
+					<onright>2201</onright>
+					<onup>2103</onup>
+					<ondown>2204</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Presets)</onclick>
+				</control>
+				<control type="button" id="2203">
+					<posx>0</posx>
+					<posy>588</posy>
+					<width>165</width>
+					<height>40</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<align>center</align>
+					<label>News</label>
+					<onleft>2204</onleft>
+					<onright>2204</onright>
+					<onup>2201</onup>
+					<ondown>2205</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,OverlayNews)</onclick>
+				</control>
+				<control type="button" id="2204">
+					<posx>175</posx>
+					<posy>588</posy>
+					<width>165</width>
+					<height>40</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<align>center</align>
+					<label>Settings</label>
+					<onleft>2203</onleft>
+					<onright>2203</onright>
+					<onup>2202</onup>
+					<ondown>2205</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Settings)</onclick>
+				</control>
+				<control type="button" id="2205">
+					<posx>0</posx>
+					<posy>636</posy>
+					<width>340</width>
+					<height>40</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<align>center</align>
+					<label>Close</label>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2205</onright>
+					<onup>2203</onup>
+					<ondown>2101</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

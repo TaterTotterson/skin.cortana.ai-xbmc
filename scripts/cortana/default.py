@@ -13,6 +13,7 @@ import socket
 import sys
 import threading
 import time
+import wave
 import xbmc
 import xbmcgui
 import urllib2
@@ -34,13 +35,20 @@ except NameError:
 # --------------------------
 
 # Now talks to the XBMC portal on the standard Tater port.
-CORTANA_API_URL = "http://10.4.20.173:8501/api/portals/xbmc_portal/api/tater-xbmc/v1/message"
+CORTANA_API_URL = "http://10.4.20.210:8501/api/portals/xbmc_portal/api/tater-xbmc/v1/message"
 HTTP_TIMEOUT_SECONDS = 15
 DEFAULT_API_KEY = ""
 SETTINGS_FILE = os.path.join(xbmc.translatePath('special://profile'), 'cortana_chat_settings.json')
+CORTANA_STATE_FILE = os.path.join(xbmc.translatePath('special://profile'), 'cortana_overlay_state.json')
+CORTANA_OVERLAY_WINDOW_ID = 9016
+CORTANA_PROPERTY_WINDOW_ID = 10000
 TTS_ENABLED = True
 TTS_MAX_CHARS = 900
 TTS_CACHE_DIR = os.path.join(xbmc.translatePath('special://profile'), 'cortana_tts')
+TTS_PAUSE_BGVIDEO_ENABLED = True
+BG_VIDEO_PATH = "E:\\BGVideo\\BGVideo.avi"
+TTS_PLAY_EXTRA_SECONDS = 0.35
+TTS_LOCK = threading.Lock()
 
 # Shared quick-ask prompts (used by both full chat and QuickAsks-only mode)
 QUICK_ASK_ITEMS = [
@@ -76,8 +84,16 @@ def _tater_base_url():
     return CORTANA_API_URL.rstrip("/")
 
 
+def _cortana_api_base_url():
+    marker = "/message"
+    idx = CORTANA_API_URL.rfind(marker)
+    if idx >= 0:
+        return CORTANA_API_URL[:idx].rstrip("/")
+    return CORTANA_API_URL.rstrip("/")
+
+
 def _tts_preview_url():
-    return _tater_base_url() + "/api/settings/speech/tts-preview"
+    return _cortana_api_base_url() + "/tts.wav"
 
 
 def _absolute_tater_url(url):
@@ -115,6 +131,65 @@ def _extract_reply(obj):
             return obj[key].strip()
 
     return ""
+
+
+def _clean_quick_ask(value):
+    text = str(value or "").strip().replace("\r", " ").replace("\n", " ")
+    while "  " in text:
+        text = text.replace("  ", " ")
+    text = text.strip(" -\t")
+    if len(text) > 64:
+        text = text[:64].rsplit(" ", 1)[0].strip()
+    return text
+
+
+def _button_label(text, limit=40):
+    label = _clean_quick_ask(text)
+    if len(label) > limit:
+        label = label[:limit].rsplit(" ", 1)[0].strip()
+    return label
+
+
+def _fallback_quick_asks(user_text="", reply_text=""):
+    combined = ("%s %s" % (user_text, reply_text)).lower()
+    if "light" in combined:
+        return ["Set the lights to blue", "Turn the lights off", "What else can you control?"]
+    if "game" in combined or "xbox" in combined:
+        return ["Tell me more about that game", "Recommend another game", "Find a multiplayer game"]
+    if "news" in combined:
+        return ["Tell me the top story", "Any Insignia updates?", "Find more Xbox news"]
+    return ["Tell me more", "What can you do next?", "Give me a quick suggestion"]
+
+
+def _extract_quick_asks(obj, user_text="", reply_text=""):
+    asks = []
+    if isinstance(obj, dict):
+        values = obj.get("quick_asks") or obj.get("suggestions") or obj.get("replies") or []
+        if isinstance(values, list):
+            for item in values:
+                ask = _clean_quick_ask(item)
+                if ask and ask not in asks:
+                    asks.append(ask)
+                if len(asks) >= 3:
+                    break
+
+    if len(asks) < 3:
+        for fallback in _fallback_quick_asks(user_text, reply_text):
+            ask = _clean_quick_ask(fallback)
+            if ask and ask not in asks:
+                asks.append(ask)
+            if len(asks) >= 3:
+                break
+
+    return asks[:3]
+
+
+def _cortana_result(reply="", quick_asks=None, response_obj=None):
+    return {
+        "reply": str(reply or "").strip(),
+        "quick_asks": quick_asks or [],
+        "response_obj": response_obj,
+    }
 
 
 def _extract_tts_url(obj):
@@ -182,6 +257,101 @@ def _tts_file_path():
     return os.path.join(TTS_CACHE_DIR, "cortana_reply_%s.wav" % stamp)
 
 
+def _wav_duration_seconds(path):
+    source = None
+
+    try:
+        source = wave.open(path, "rb")
+        rate = float(source.getframerate() or 0)
+        if rate <= 0:
+            return 0.0
+        return float(source.getnframes()) / rate
+    except Exception as e:
+        _log("Unable to read TTS WAV duration: %s" % e)
+        return 0.0
+    finally:
+        try:
+            if source:
+                source.close()
+        except Exception:
+            pass
+
+
+def _normalize_path(path):
+    try:
+        return str(path or "").replace("/", "\\").lower()
+    except Exception:
+        return ""
+
+
+def _get_playing_file(player):
+    try:
+        return player.getPlayingFile()
+    except Exception:
+        return ""
+
+
+def _is_background_video_file(path):
+    return _normalize_path(path) == _normalize_path(BG_VIDEO_PATH)
+
+
+def _toggle_player_pause():
+    try:
+        player = xbmc.Player()
+        if hasattr(player, "pause"):
+            player.pause()
+        else:
+            xbmc.executebuiltin("PlayerControl(Pause)")
+        return True
+    except Exception as e:
+        _log("Player pause toggle failed: %s" % e)
+        return False
+
+
+def _pause_background_video_for_tts():
+    if not TTS_PAUSE_BGVIDEO_ENABLED:
+        return False
+
+    try:
+        player = xbmc.Player()
+        if not player.isPlaying():
+            return False
+
+        current_file = _get_playing_file(player)
+        if not _is_background_video_file(current_file):
+            if current_file:
+                _log("TTS leaving current media playing: %s" % current_file)
+            return False
+
+        if _toggle_player_pause():
+            _log("Paused background video for TTS")
+            time.sleep(0.15)
+            return True
+
+    except Exception as e:
+        _log("Unable to pause background video for TTS: %s" % e)
+
+    return False
+
+
+def _resume_background_video_after_tts(paused):
+    if not paused:
+        return
+
+    try:
+        player = xbmc.Player()
+        current_file = _get_playing_file(player)
+        if current_file and not _is_background_video_file(current_file):
+            _log("Not resuming background video; another file is active: %s" % current_file)
+            return
+
+        if _toggle_player_pause():
+            _log("Resumed background video after TTS")
+
+    except Exception as e:
+        _log("Unable to resume background video after TTS: %s" % e)
+
+
 def _save_tts_wav(audio):
     if not audio:
         return ""
@@ -196,6 +366,7 @@ def _save_tts_wav(audio):
             f.write(audio)
         finally:
             f.close()
+        _log("Saved TTS WAV: %s (%s bytes)" % (path, len(audio)))
         return path
     except Exception as e:
         _log("Unable to save TTS WAV: %s" % e)
@@ -259,13 +430,32 @@ def _play_tts_file(path):
     if not path or not os.path.exists(path):
         return
 
+    TTS_LOCK.acquire()
+    paused_bgvideo = False
     try:
+        duration = _wav_duration_seconds(path)
+        paused_bgvideo = _pause_background_video_for_tts()
+
+        _log("Playing TTS WAV: %s" % path)
         if hasattr(xbmc, "playSFX"):
             xbmc.playSFX(path)
         else:
             xbmc.executebuiltin('PlaySFX("%s")' % path)
+
+        if duration > 0:
+            time.sleep(duration + TTS_PLAY_EXTRA_SECONDS)
+
+        _resume_background_video_after_tts(paused_bgvideo)
+        paused_bgvideo = False
+
     except Exception as e:
         _log("TTS playback failed: %s" % e)
+    finally:
+        _resume_background_video_after_tts(paused_bgvideo)
+        try:
+            TTS_LOCK.release()
+        except Exception:
+            pass
 
 
 def _play_reply_tts(reply, response_obj=None):
@@ -363,6 +553,101 @@ def _show_popup(dialog, title, text):
     dialog.ok(title, line1, line2, line3)
 
 
+def _load_overlay_state():
+    try:
+        if not os.path.exists(CORTANA_STATE_FILE):
+            return {"reply": "", "quick_asks": _fallback_quick_asks(), "history": []}
+        f = open(CORTANA_STATE_FILE, "r")
+        try:
+            raw = f.read()
+        finally:
+            f.close()
+        parsed = json.loads(raw) if raw else {}
+        if not isinstance(parsed, dict):
+            parsed = {}
+        return {
+            "reply": str(parsed.get("reply") or ""),
+            "quick_asks": _extract_quick_asks(parsed, "", str(parsed.get("reply") or "")),
+            "history": parsed.get("history") if isinstance(parsed.get("history"), list) else [],
+        }
+    except Exception as e:
+        _log("Overlay state load failed: %s" % e)
+        return {"reply": "", "quick_asks": _fallback_quick_asks(), "history": []}
+
+
+def _save_overlay_state(state):
+    try:
+        folder = os.path.dirname(CORTANA_STATE_FILE)
+        if folder and not os.path.exists(folder):
+            os.makedirs(folder)
+        f = open(CORTANA_STATE_FILE, "w")
+        try:
+            f.write(json.dumps(state))
+        finally:
+            f.close()
+        return True
+    except Exception as e:
+        _log("Overlay state save failed: %s" % e)
+        return False
+
+
+def _overlay_lines(text, width=40, max_lines=5):
+    clean = _format_popup(text, width=width)
+    lines = []
+    for line in clean.split("\n"):
+        line = str(line or "").strip()
+        if line:
+            lines.append(line)
+        if len(lines) >= max_lines:
+            break
+    while len(lines) < max_lines:
+        lines.append("")
+    return lines[:max_lines]
+
+
+def _set_overlay_property(name, value):
+    text = str(value or "")
+    try:
+        xbmcgui.Window(CORTANA_PROPERTY_WINDOW_ID).setProperty(name, text)
+    except Exception as e:
+        _log("Overlay property failed for %s: %s" % (name, e))
+
+
+def _refresh_overlay_properties(state):
+    reply = str(state.get("reply") or "")
+    quick_asks = list(state.get("quick_asks") or [])[:3]
+    history = list(state.get("history") or [])[:4]
+
+    for idx, line in enumerate(_overlay_lines(reply), 1):
+        _set_overlay_property("Cortana.Reply%s" % idx, line)
+
+    for idx in range(3):
+        text = quick_asks[idx] if idx < len(quick_asks) else _fallback_quick_asks()[idx]
+        _set_overlay_property("Cortana.Quick%s" % (idx + 1), _button_label(text, limit=38))
+
+    for idx in range(4):
+        line = history[idx] if idx < len(history) else ""
+        _set_overlay_property("Cortana.History%s" % (idx + 1), _button_label(line, limit=55))
+
+
+def _open_cortana_skin_overlay(state):
+    _save_overlay_state(state)
+    _refresh_overlay_properties(state)
+    _log("Opening Cortana skin overlay window %s" % CORTANA_OVERLAY_WINDOW_ID)
+    xbmc.executebuiltin("ActivateWindow(%s)" % CORTANA_OVERLAY_WINDOW_ID)
+    time.sleep(0.15)
+    _refresh_overlay_properties(state)
+
+
+def _show_result_on_skin_overlay(result, history, user_text=""):
+    reply = str(result.get("reply") or "")
+    quick_asks = list(result.get("quick_asks") or _fallback_quick_asks(user_text, reply))[:3]
+    state = {"reply": reply, "quick_asks": quick_asks, "history": list(history or [])[:60]}
+    _open_cortana_skin_overlay(state)
+    _play_reply_tts(reply, result.get("response_obj"))
+    return state
+
+
 def _load_chat_settings():
     settings = {"api_key": DEFAULT_API_KEY}
     try:
@@ -425,9 +710,9 @@ def _set_api_key(dialog):
         dialog.ok("Cortana Chat", "Failed to save API key.")
 
 
-def call_cortana(message):
+def call_cortana_result(message, auto_tts=True):
     """
-    Send a message to the XBMC bridge endpoint and return the reply text.
+    Send a message to the XBMC bridge endpoint and return reply text plus quick asks.
     """
 
     profile_name = xbmc.getInfoLabel("System.ProfileName") or "XBMC4Xbox"
@@ -440,12 +725,13 @@ def call_cortana(message):
         "area_id": "xbmc",
         "include_tts": True,
         "tts_format": "wav",
+        "include_quick_asks": True,
     }
 
     try:
         data = json.dumps(payload)
     except Exception as e:
-        return "JSON error: %s" % e
+        return _cortana_result("JSON error: %s" % e)
 
     _log("Sending to Cortana URL: %s" % CORTANA_API_URL)
     _log("Payload: %s" % data)
@@ -467,14 +753,16 @@ def call_cortana(message):
         try:
             obj = json.loads(raw)
         except Exception:
-            return raw.strip()
+            return _cortana_result(raw.strip(), _fallback_quick_asks(message, raw))
 
         reply = _extract_reply(obj)
         if reply:
-            _play_reply_tts_async(reply, obj)
-            return reply
+            if auto_tts:
+                _play_reply_tts_async(reply, obj)
+            return _cortana_result(reply, _extract_quick_asks(obj, message, reply), obj)
 
-        return json.dumps(obj)
+        fallback_reply = json.dumps(obj)
+        return _cortana_result(fallback_reply, _fallback_quick_asks(message, fallback_reply))
 
     except urllib2.HTTPError as e:
         try:
@@ -488,121 +776,110 @@ def call_cortana(message):
             else:
                 hint = "API key required. Open Cortana Chat and choose Set API Key."
             if body:
-                return "HTTP %s\n%s\n%s" % (e.code, body, hint)
-            return "HTTP %s\n%s" % (e.code, hint)
+                return _cortana_result("HTTP %s\n%s\n%s" % (e.code, body, hint))
+            return _cortana_result("HTTP %s\n%s" % (e.code, hint))
 
-        return "HTTP %s\n%s" % (e.code, body)
+        return _cortana_result("HTTP %s\n%s" % (e.code, body))
 
     except urllib2.URLError as e:
-        return "URL error: %s" % getattr(e, "reason", e)
+        return _cortana_result("URL error: %s" % getattr(e, "reason", e))
 
     except Exception as e:
-        return "Error talking to Cortana: %s" % e
+        return _cortana_result("Error talking to Cortana: %s" % e)
+
+
+def call_cortana(message):
+    """
+    Compatibility wrapper for the older popup flows.
+    """
+    return call_cortana_result(message, auto_tts=True).get("reply", "")
 
 
 def display_cortana_chat():
     """
     Full Cortana chat experience:
-    - Greeting
-    - Ask Cortana
-    - Inline Quick Ask menu
-    - History view
+    - Skin XML Cortana overlay
+    - Dynamic quick replies from Tater
+    - Ask Cortana keyboard action
+    - Preset quick asks, news, and settings actions
     """
-    dialog = xbmcgui.Dialog()
     history = []
 
-    # --------------------------
-    # Xbox OG Cortana-style greeting on launch
-    # --------------------------
     try:
         greeting_prompt = (
             "Greet the user as Cortana from the original Xbox. "
-            "Be warm, confident, and helpful. Keep it under 2 sentences."
+            "Ask if they want help controlling lights, finding a game, or using tools. "
+            "Use one warm, confident sentence under 22 words with no markdown."
         )
-        greeting_reply = call_cortana(greeting_prompt)
-        if greeting_reply:
-            # Show greeting popup (wrapped, with up to 3 lines)
-            _show_popup(dialog, "Cortana Chat", greeting_reply)
-            # Add to history (Cortana only, no faux user line; single-line)
-            history.insert(0, "Cortana: %s" % greeting_reply)
+        current = call_cortana_result(greeting_prompt, auto_tts=False)
     except Exception as e:
         _log("Startup greeting failed: %s" % e)
+        current = _cortana_result("Cortana is online. Ask me about lights, games, or tools.")
 
-    xbmc.executebuiltin("Notification(Cortana Chat, Press A to ask Cortana, 2500)")
+    if current.get("reply"):
+        history.insert(0, "Cortana: %s" % current.get("reply"))
 
-    while True:
-        items = [
-            "Ask Cortana…",
-            "Quick Ask →",
-            "Set API Key…"
-        ]
+    _show_result_on_skin_overlay(current, history)
 
-        if history:
-            items.append("────────────")
-            items.extend(history)
 
-        choice = dialog.select("Cortana Chat", items)
+def _send_overlay_message(text):
+    text = str(text or "").strip()
+    if not text:
+        return
 
-        if choice == -1:
-            break
+    state = _load_overlay_state()
+    history = list(state.get("history") or [])
+    xbmc.executebuiltin("Notification(Cortana Chat, Working..., 1500)")
+    result = call_cortana_result(text, auto_tts=False)
 
-        # ------------------------------
-        # Ask Cortana (keyboard)
-        # ------------------------------
-        if choice == 0:
-            kb = xbmc.Keyboard("", "Talk to Cortana", False)
-            kb.doModal()
+    history.insert(0, "Cortana: %s" % result.get("reply", ""))
+    history.insert(0, "You:     %s" % text)
+    if len(history) > 60:
+        history = history[:60]
 
-            if not kb.isConfirmed():
-                continue
+    _show_result_on_skin_overlay(result, history, text)
 
-            text = kb.getText()
-            if not text:
-                continue
 
-            reply = call_cortana(text)
+def handle_overlay_action(action):
+    dialog = xbmcgui.Dialog()
+    token = str(action or "").lower()
+    state = _load_overlay_state()
 
-            # Wrapped popup for long replies (up to 3 lines)
-            _show_popup(dialog, "Cortana Chat", reply)
+    if token in ("quick1", "quick2", "quick3"):
+        idx = int(token[-1]) - 1
+        quick_asks = list(state.get("quick_asks") or [])
+        if 0 <= idx < len(quick_asks):
+            _send_overlay_message(quick_asks[idx])
+        return
 
-            # NEWEST AT TOP: keep entries single-line for the menu
-            history.insert(0, "Cortana: %s" % reply)
-            history.insert(0, "You:     %s" % text)
+    if token == "ask":
+        kb = xbmc.Keyboard("", "Talk to Cortana", False)
+        kb.doModal()
+        if kb.isConfirmed():
+            _send_overlay_message(kb.getText())
+        else:
+            _open_cortana_skin_overlay(state)
+        return
 
-            if len(history) > 60:
-                history = history[:60]
+    if token == "presets":
+        q_choice = dialog.select("Preset Quick Asks", QUICK_ASK_ITEMS)
+        if q_choice != -1:
+            _send_overlay_message(QUICK_ASK_ITEMS[q_choice])
+        else:
+            _open_cortana_skin_overlay(state)
+        return
 
-            continue
+    if token in ("news", "overlaynews"):
+        _send_overlay_message(
+            "What's the latest OG Xbox news? "
+            "Use the web_search tool to look it up first, then summarize the most important updates."
+        )
+        return
 
-        # ------------------------------
-        # Quick Ask (inline mode)
-        # ------------------------------
-        if choice == 1:
-            q_choice = dialog.select("Quick Ask", QUICK_ASK_ITEMS)
-            if q_choice == -1:
-                continue
-
-            text = QUICK_ASK_ITEMS[q_choice]
-            reply = call_cortana(text)
-
-            # Wrapped popup
-            _show_popup(dialog, "Cortana Chat", reply)
-
-            # NEWEST AT TOP (single-line)
-            history.insert(0, "Cortana: %s" % reply)
-            history.insert(0, "You:     %s" % text)
-
-            if len(history) > 60:
-                history = history[:60]
-
-            continue
-
-        # ------------------------------
-        # API key setup
-        # ------------------------------
-        if choice == 2:
-            _set_api_key(dialog)
-            continue
+    if token == "settings":
+        _set_api_key(dialog)
+        _open_cortana_skin_overlay(state)
+        return
 
 
 def display_cortana_quick_asks():
@@ -648,14 +925,16 @@ def display_cortana_news():
 if __name__ == "__main__":
     try:
         # Called from the skin like:
-        #   <onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py,QuickAsks)</onclick>
-        #   <onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py,News)</onclick>
+        #   <onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,QuickAsks)</onclick>
+        #   <onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,News)</onclick>
         if len(sys.argv) > 1:
             arg = str(sys.argv[1]).lower()
             if arg == "quickasks":
                 display_cortana_quick_asks()
             elif arg == "news":
                 display_cortana_news()
+            elif arg in ("quick1", "quick2", "quick3", "ask", "presets", "settings", "overlaynews"):
+                handle_overlay_action(arg)
             else:
                 display_cortana_chat()
         else:

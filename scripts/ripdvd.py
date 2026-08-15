@@ -11,7 +11,7 @@ def launch_xbe():
         for file in files:
             if file.endswith('default.xbe'):
                 xbe_path = os.path.join(D_DRIVE, file)
-                xbmc.executebuiltin('RunScript(Q:\\skin\\Cortana\\scripts\\utilities\\dvd2xbox.py)')
+                xbmc.executebuiltin('RunScript(Q:\\skin\\skin.cortana.ai\\scripts\\utilities\\dvd2xbox.py)')
                 return True
     except:
         return False  # Ignore errors for now (likely an audio CD)

@@ -116,22 +116,22 @@
 					<content>
 						<item>
 							<label>Friends</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\chat.py,Friends)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\chat.py,Friends)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Messages</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\chat.py,Chat)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\chat.py,Chat)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Beacons & Activity</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\chat.py,Activity)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\chat.py,Activity)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Notifications</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\chat.py,Notifications)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\chat.py,Notifications)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
@@ -145,12 +145,12 @@
 						</item>
 						<item>
 							<label>Log In</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\chatnotifier.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\chatnotifier.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Log Out</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\stop_chatnotifier.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stop_chatnotifier.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 					</content>

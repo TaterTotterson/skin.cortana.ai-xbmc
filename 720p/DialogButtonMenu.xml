@@ -115,27 +115,27 @@
 					<content>
 						<item>
 							<label>Cortana</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Cortana Quick Asks</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py,QuickAsks)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,QuickAsks)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Insignia</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>XlinkKai</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
 							<label>Add Games for Online Play</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\installgames.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\installgames.py)</onclick>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
@@ -146,7 +146,7 @@
 						<item>
 							<label>Play Disc</label>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\dvd.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\dvd.py)</onclick>
 						</item>
 					</content>
 				</control>

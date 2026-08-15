@@ -246,64 +246,64 @@
 					<content>
 						<item>
 							<label>31025</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py,News)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,News)</onclick>
 							<icon>special://skin/button_icons/icon-messages.png</icon>
 							<thumb>-</thumb>
 							<visible>!Skin.HasSetting(AppsBlade_HideEmus)</visible>
 						</item>
 						<item>
 							<label>Cortana</label>
-				            <onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py)</onclick>
+				            <onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py)</onclick>
 							<icon>special://skin/button_icons/icon-systeminfo.png</icon>
 							<thumb>-</thumb>
 							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
 						</item>
 						<item>
 							<label>31026</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py)</onclick>
 							<icon>special://skin/button_icons/icon-insignia.png</icon>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31028</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py,Sessions)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Sessions)</onclick>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31029</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py,Statistics)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Statistics)</onclick>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>> Events</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\insignia.py,Events)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Events)</onclick>
 							<thumb>-</thumb>
 						</item>
 
 						<item>
 							<label>31027</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py)</onclick>
 							<icon>special://skin/button_icons/icon-xlinkkai.png</icon>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31028</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py,Sessions)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Sessions)</onclick>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31029</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py,Statistics)</onclick>>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Statistics)</onclick>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31030</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\serverbrowser\xlinkkai.py,Events)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Events)</onclick>
 							<thumb>-</thumb>
 						</item>
 						<item>
 							<label>31031</label>
-							<onclick>RunScript(Q:\skin\Cortana\scripts\cortana\default.py)</onclick>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py)</onclick>
 							<icon>special://skin/button_icons/icon-cortana.png</icon>
 							<thumb>-</thumb>
 						</item>
