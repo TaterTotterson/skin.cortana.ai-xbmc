@@ -48,6 +48,40 @@ def has_video():
         return False
 
 
+def normalize_path(path):
+    try:
+        return path.replace("/", "\\").lower()
+    except Exception:
+        return ""
+
+
+def get_playing_file(player):
+    try:
+        return player.getPlayingFile()
+    except Exception:
+        return ""
+
+
+def should_start_background_video():
+    player = xbmc.Player()
+
+    try:
+        if not player.isPlaying():
+            return True
+    except Exception:
+        return True
+
+    current_file = normalize_path(get_playing_file(player))
+    if current_file == normalize_path(VIDEO_PATH):
+        log("Background video is already playing")
+    elif current_file:
+        log("Media is already playing; leaving it alone: %s" % current_file)
+    else:
+        log("Media is already playing; leaving it alone")
+
+    return False
+
+
 def remove_temp_video():
     try:
         if os.path.exists(TEMP_VIDEO_PATH):
@@ -169,6 +203,9 @@ def main():
         log("%s not found; downloading from release asset" % VIDEO_PATH)
         if not download_video():
             return
+
+    if not should_start_background_video():
+        return
 
     play_video()
 
