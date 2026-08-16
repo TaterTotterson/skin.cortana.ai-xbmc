@@ -8,6 +8,7 @@
 		<include condition="!Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
 		<control type="group">
 			<animation effect="slide" start="0,0" end="1280,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(1)">Conditional</animation>
+			<animation effect="slide" start="0,0" end="-1280,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(2)">Conditional</animation>
 			<include>CommonSystemBackground</include>
 		</control>
 		<control type="group">
@@ -15,10 +16,16 @@
 			<animation effect="slide" start="-1280,0" end="0,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(1)">Conditional</animation>
 			<include>CommonMediaBackground</include>
 		</control>
+		<control type="group">
+			<visible>Control.HasFocus(2)</visible>
+			<animation effect="slide" start="1280,0" end="0,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(2)">Conditional</animation>
+			<include>CommonTaterBackground</include>
+		</control>
 		<include condition="Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
 <!-- Blackwash Background -->
 		<control type="group">
 			<animation effect="slide" end="-50,0" time="0" condition="Control.HasFocus(1)">Conditional</animation>
+			<animation effect="slide" end="50,0" time="0" condition="Control.HasFocus(2)">Conditional</animation>
 			<control type="image">
 				<description>Background</description>
 				<posx>205</posx>
@@ -92,7 +99,7 @@
 					<width>450</width>
 					<height>452</height>
 					<onleft>1</onleft>
-					<onright>10</onright>
+					<onright>2</onright>
 					<onup>9000</onup>
 					<ondown>9000</ondown>
 					<viewtype label="535">list</viewtype>
@@ -290,68 +297,7 @@
 				</control>
 			</control>
 		</control>
-		<control type="group">
-			<posx>115r</posx>
-			<posy>232</posy>
-			<animation effect="slide" start="100,0" end="0,0" time="HomeBladeAnimationSpeed">WindowOpen</animation>
-			<visible>!Window.Next(Home)</visible>
-			<control type="image">
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>74</width>
-				<height>256</height>
-				<aspectratio>stretch</aspectratio>
-				<texture border="25,5,5,5">power-panel.png</texture>
-			</control>
-			<control type="button" id="10">
-				<description>Shutdown Button</description>
-				<posx>5</posx>
-				<posy>0</posy>
-				<width>64</width>
-				<height>128</height>
-				<texturenofocus>-</texturenofocus>
-				<texturefocus>power-panel-focus1.png</texturefocus>
-				<onclick>ActivateWindow(ShutdownMenu)</onclick>
-				<onleft>9000</onleft>
-				<onright>10</onright>
-				<onup>11</onup>
-				<ondown>11</ondown>
-			</control>
-			<control type="button" id="11">
-				<description>Favourites Button</description>
-				<posx>5</posx>
-				<posy>128</posy>
-				<width>64</width>
-				<height>128</height>
-				<texturenofocus>-</texturenofocus>
-				<texturefocus flipy="true">power-panel-focus1.png</texturefocus>
-				<onclick>ActivateWindow(Favourites)</onclick>
-				<onleft>9000</onleft>
-				<onright>11</onright>
-				<onup>10</onup>
-				<ondown>10</ondown>
-			</control>
-			<control type="image">
-				<description>Icon</description>
-				<posx>18</posx>
-				<posy>50</posy>
-				<width>40</width>
-				<height>40</height>
-				<aspectratio>keep</aspectratio>
-				<texture>special://skin/button_icons/icon-power.png</texture>
-			</control>
-			<control type="image">
-				<description>Icon</description>
-				<posx>18</posx>
-				<posy>165</posy>
-				<width>40</width>
-				<height>40</height>
-				<aspectratio>keep</aspectratio>
-				<texture>special://skin/button_icons/icon-favourites.png</texture>
-			</control>
-		</control>
-
-		<control type="button" id="1">
+			<control type="button" id="1">
 			<description>Blank Blade Slide Right</description>
 			<posx>-80</posx>
 			<posy>0</posy>
@@ -362,8 +308,19 @@
 			<animation effect="slide" end="1280,0" time="HomeBladeAnimationSpeed">focus</animation>
 			<hitrect x="-10" y="-10" w="1" h="1" />
 		</control>
+		<control type="button" id="2">
+			<description>Blank Blade Slide Left</description>
+			<posx>80r</posx>
+			<posy>0</posy>
+			<width>160</width>
+			<height>720</height>
+			<texturefocus>blades-blank-right.png</texturefocus>
+			<onfocus>ActivateWindow(1113)</onfocus>
+			<animation effect="slide" end="-1280,0" time="HomeBladeAnimationSpeed">focus</animation>
+			<hitrect x="-10" y="-10" w="1" h="1" />
+		</control>
 		<control type="group">
-			<visible>!Control.HasFocus(1)</visible>
+			<visible>!Control.HasFocus(1) + !Control.HasFocus(2)</visible>
 			<!-- Left side -->
 			<control type="image">
 				<posx>-110</posx>
@@ -458,6 +415,25 @@
 				<aspectratio>stretch</aspectratio>
 				<texture>blades-runner-right.png</texture>
 			</control>
+			<control type="image">
+				<posx>115r</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size2-right-NF.png</texture>
+			</control>
+			<control type="label">
+				<description>Tater Label</description>
+				<label>Tater</label>
+				<posx>50r</posx>
+				<posy>200</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
 		</control>
 
 		<control type="group">
@@ -532,35 +508,175 @@
 				<visible>Control.HasFocus(1)</visible>
 				<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
 			</control>
-			<!-- Right side -->
-			<control type="image">
-				<posx>65r</posx>
-				<posy>-40</posy>
-				<width>180</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-runner-right.png</texture>
+				<!-- Right side -->
+				<control type="image">
+					<posx>65r</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-right.png</texture>
+				</control>
+				<control type="image">
+					<posx>115r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Tater Label</description>
+					<label>Tater</label>
+					<posx>50r</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>165r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>System Label</description>
+					<label>31003</label>
+					<posx>100r</posx>
+					<posy>190</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
 			</control>
-			<control type="image">
-				<posx>115r</posx>
-				<posy>-40</posy>
-				<width>115</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-size3-right-NF.png</texture>
+			<control type="group">
+				<description>Tater Blades</description>
+				<visible>Control.HasFocus(2)</visible>
+				<!-- Left side -->
+				<control type="image">
+					<posx>-110</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-left.png</texture>
+				</control>
+				<control type="image">
+					<posx>0</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size1-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>weather Label</description>
+					<label>31004</label>
+					<posx>90</posx>
+					<posy>210</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>50</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Apps Label</description>
+					<label>31002</label>
+					<posx>140</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>100</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Media Label</description>
+					<label>31001</label>
+					<posx>190</posx>
+					<posy>190</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>150</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>System Label</description>
+					<label>31003</label>
+					<posx>240</posx>
+					<posy>180</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>200</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size4-header.png</texture>
+					<visible>Control.HasFocus(2)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
+				<control type="label">
+					<description>Tater Label</description>
+					<label>Tater</label>
+					<posx>290</posx>
+					<posy>170</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+					<visible>Control.HasFocus(2)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
+				<!-- Right side -->
+				<control type="image">
+					<posx>5r</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-right.png</texture>
+				</control>
 			</control>
-			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
-				<posx>50r</posx>
-				<posy>190</posy>
-				<font>font16</font>
-				<textcolor>black</textcolor>
-				<align>left</align>
-				<aligny>middle</aligny>
-				<angle>270</angle>
-			</control>
-		</control>
-		<include>Common_Now_Playing</include>
+			<include>Common_Now_Playing</include>
 	</controls>	
 </window>

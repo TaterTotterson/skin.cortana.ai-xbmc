@@ -1,3 +1,37 @@
+[B]Version 2.16[/B]
+
+- Added the Tater Tube blade with paired-player browsing for Tube TV, Stream, Local, and Music.
+- Added Tube TV channel paging and Xbox-safe schedule playback across shows, commercials, and bumpers.
+- Added Tater Tube stream cleanup when backing out of fullscreen playback.
+- Added a lightweight Tater Tube channel loader so large TV guides do not freeze the dashboard.
+- Added the Tater info/update blade with manual update checks and staged skin install support.
+- Added Tater Environment Core weather on the Home blade.
+- Simplified Cortana into a faster launch menu with game recommendations, Tater Tube, and Quick Asks.
+- Moved Insignia and XLink Kai to the Games blade and removed their old Cortana submenu entries.
+- Hid background-video now-playing chrome and refined BGVideo startup/playback behavior.
+
+[B]Version 2.15[/B]
+
+- Added a new orange Tater blade after Settings.
+- Added skin version and Tater Tube status display using the main Tater logo.
+- Added Tater-proxied GitHub release update checks and staged skin update install support.
+- Added a skin reload action so XBMC can refresh the active skin after an update.
+
+[B]Version 2.14[/B]
+
+- Updated the Home weather card to pull current conditions from Tater Environment Core.
+- Added cached Tater weather polling so the card updates without depending on XBMC's legacy weather window.
+- Added a Home startup hook for the Tater weather card script.
+
+[B]Version 2.13[/B]
+
+- Added five dynamic Cortana quick replies in the skin overlay.
+- Added XBMC Programs database game-library awareness for installed original Xbox recommendations.
+- Added game-finder flow that recommends three installed games with launch buttons.
+- Added direct launch routing for generated game choices, including shortened game labels.
+- Added original-Xbox and local time context to Cortana requests.
+- Improved Cortana greeting flow so it offers lights, game finder, and tools before recommendations.
+
 [B]Version 2.12[/B]
 
 - Added first-run BGVideo download support from Tater with GitHub release asset fallback.

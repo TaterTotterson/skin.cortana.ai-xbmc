@@ -306,7 +306,7 @@
 			<width>80</width>
 			<height>80</height>
 			<aspectratio>keep</aspectratio>
-			<texture>$INFO[Window(Weather).Property(Current.ConditionIcon)]</texture>
+				<texture fallback="special://skin/button_icons/icon-weather.png">$INFO[Skin.String(TaterWeather.ConditionIcon)]</texture>
 		</control>
 		<control type="label">
 			<description>Temp Label</description>
@@ -327,12 +327,27 @@
 			<posy>55</posy>
 			<height>30</height>
 			<width>110</width>
-			<label>$INFO[Window(Weather).Property(Current.Temperature)]$INFO[System.TemperatureUnits]</label>
-			<align>right</align>
-			<aligny>center</aligny>
-			<font>font35</font>
-			<textcolor>white2</textcolor>
-			<shadowcolor>black</shadowcolor>
+				<label>$INFO[Skin.String(TaterWeather.TemperatureDisplay)]</label>
+				<align>right</align>
+				<aligny>center</aligny>
+				<font>font35</font>
+				<textcolor>white2</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<visible>!IsEmpty(Skin.String(TaterWeather.TemperatureDisplay))</visible>
+			</control>
+			<control type="label">
+				<description>Temp Value</description>
+				<posx>380</posx>
+				<posy>55</posy>
+				<height>30</height>
+				<width>110</width>
+				<label>--</label>
+				<align>right</align>
+				<aligny>center</aligny>
+				<font>font35</font>
+				<textcolor>white2</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<visible>IsEmpty(Skin.String(TaterWeather.TemperatureDisplay))</visible>
 		</control>
 		<control type="label">
 			<description>Conditions Label</description>
@@ -340,13 +355,28 @@
 			<posy>85</posy>
 			<height>30</height>
 			<width>290</width>
-			 <label>$INFO[Window(Weather).Property(Current.Condition)]</label>
-			<align>left</align>
-			<aligny>center</aligny>
-			<font>font12</font>
-			<textcolor>white2</textcolor>
-			<shadowcolor>black</shadowcolor>
-		</control>
+				 <label>$INFO[Skin.String(TaterWeather.Condition)]</label>
+				<align>left</align>
+				<aligny>center</aligny>
+				<font>font12</font>
+				<textcolor>white2</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<visible>!IsEmpty(Skin.String(TaterWeather.Condition))</visible>
+			</control>
+			<control type="label">
+				<description>Conditions Label</description>
+				<posx>120</posx>
+				<posy>85</posy>
+				<height>30</height>
+				<width>290</width>
+				 <label>Weather refresh pending</label>
+				<align>left</align>
+				<aligny>center</aligny>
+				<font>font12</font>
+				<textcolor>white2</textcolor>
+				<shadowcolor>black</shadowcolor>
+				<visible>IsEmpty(Skin.String(TaterWeather.Condition))</visible>
+			</control>
 	</include>
 
 	<include name="SystemCard">
@@ -729,6 +759,7 @@
 	</include>
 	<include name="Common_Now_Playing">
 		<control type="group">
+			<visible>false</visible>
 			<animation effect="fade" delay="500" time="HomeVisibleFadeAnimationSpeed" condition="Window.Previous(FullscreenVideo) | Window.Previous(Visualisation)">WindowOpen</animation>
 			<control type="group">
 				<visible>Player.HasVideo + VideoPlayer.Content(Movies)</visible>

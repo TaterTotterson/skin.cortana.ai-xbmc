@@ -124,22 +124,7 @@
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 						</item>
 						<item>
-							<label>Insignia</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py)</onclick>
-							<onclick>Dialog.Close(shutdownmenu)</onclick>
-						</item>
-						<item>
-							<label>XlinkKai</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py)</onclick>
-							<onclick>Dialog.Close(shutdownmenu)</onclick>
-						</item>
-						<item>
-							<label>Add Games for Online Play</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\installgames.py)</onclick>
-							<onclick>Dialog.Close(shutdownmenu)</onclick>
-						</item>
-						<item>
-							<label>Power & Settings</label>
+							<label>Power &amp; Settings</label>
 							<onclick>Dialog.Close(shutdownmenu)</onclick>
 							<onclick>ActivateWindow(9011)</onclick>
 						</item>

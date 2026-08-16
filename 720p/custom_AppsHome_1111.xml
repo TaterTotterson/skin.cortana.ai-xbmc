@@ -265,6 +265,20 @@
 							<visible>!Skin.HasSetting(AppsBlade_HideEmus)</visible>
 						</item>
 						<item>
+							<label>Insignia</label>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py)</onclick>
+							<icon>special://skin/button_icons/icon-insignia.png</icon>
+							<thumb>-</thumb>
+							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
+						</item>
+						<item>
+							<label>XLink Kai</label>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py)</onclick>
+							<icon>special://skin/button_icons/icon-xlinkkai.png</icon>
+							<thumb>-</thumb>
+							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
+						</item>
+						<item>
 							<label>0</label>
 							<onclick>ActivateWindow(Programs,Apps,return)</onclick>
 							<icon>special://skin/button_icons/icon-apps.png</icon>
@@ -414,13 +428,13 @@
 				<width>115</width>
 				<height>800</height>
 				<aspectratio>stretch</aspectratio>
-				<texture>blades-size2-right-NF.png</texture>
+				<texture>blades-size1-right-NF.png</texture>
 			</control>
 			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
+				<description>Tater Label</description>
+				<label>Tater</label>
 				<posx>50r</posx>
-				<posy>200</posy>
+				<posy>210</posy>
 				<font>font16</font>
 				<textcolor>black</textcolor>
 				<align>left</align>
@@ -433,12 +447,31 @@
 				<width>115</width>
 				<height>800</height>
 				<aspectratio>stretch</aspectratio>
+				<texture>blades-size2-right-NF.png</texture>
+			</control>
+			<control type="label">
+				<description>System Label</description>
+				<label>31003</label>
+				<posx>100r</posx>
+				<posy>200</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>215r</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
 				<texture>blades-size3-right-NF.png</texture>
 			</control>
 			<control type="label">
 				<description>Media Label</description>
 				<label>31001</label>
-				<posx>100r</posx>
+				<posx>150r</posx>
 				<posy>190</posy>
 				<font>font16</font>
 				<textcolor>black</textcolor>
@@ -530,26 +563,45 @@
 				<aspectratio>stretch</aspectratio>
 				<texture>blades-runner-right.png</texture>
 			</control>
-			<control type="image">
-				<posx>115r</posx>
-				<posy>-40</posy>
-				<width>115</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-size3-right-NF.png</texture>
+				<control type="image">
+					<posx>115r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Tater Label</description>
+					<label>Tater</label>
+					<posx>50r</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>165r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>System Label</description>
+					<label>31003</label>
+					<posx>100r</posx>
+					<posy>190</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
 			</control>
-			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
-				<posx>50r</posx>
-				<posy>190</posy>
-				<font>font16</font>
-				<textcolor>black</textcolor>
-				<align>left</align>
-				<aligny>middle</aligny>
-				<angle>270</angle>
-			</control>
-		</control>
 
 		<control type="group">
 			<description>Weather Blades</description>
@@ -591,68 +643,87 @@
 				<aspectratio>stretch</aspectratio>
 				<texture>blades-runner-right.png</texture>
 			</control>
-			<control type="image">
-				<posx>115r</posx>
-				<posy>-40</posy>
-				<width>115</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-size1-right-NF.png</texture>
+				<control type="image">
+					<posx>115r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size1-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Tater Label</description>
+					<label>Tater</label>
+					<posx>50r</posx>
+					<posy>210</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>165r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>System Label</description>
+					<label>31003</label>
+					<posx>100r</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>215r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Media Label</description>
+					<label>31001</label>
+					<posx>150r</posx>
+					<posy>190</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>265r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-right-NF.png</texture>
+					<visible>Control.HasFocus(1)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
+				<control type="label">
+					<description>Apps Label</description>
+					<label>31002</label>
+					<posx>200r</posx>
+					<posy>180</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+					<visible>Control.HasFocus(1)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
 			</control>
-			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
-				<posx>50r</posx>
-				<posy>210</posy>
-				<font>font16</font>
-				<textcolor>black</textcolor>
-				<align>left</align>
-				<aligny>middle</aligny>
-				<angle>270</angle>
-			</control>
-			<control type="image">
-				<posx>165r</posx>
-				<posy>-40</posy>
-				<width>115</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-size2-right-NF.png</texture>
-			</control>
-			<control type="label">
-				<description>Media Label</description>
-				<label>31001</label>
-				<posx>100r</posx>
-				<posy>200</posy>
-				<font>font16</font>
-				<textcolor>black</textcolor>
-				<align>left</align>
-				<aligny>middle</aligny>
-				<angle>270</angle>
-			</control>
-			<control type="image">
-				<posx>215r</posx>
-				<posy>-40</posy>
-				<width>115</width>
-				<height>800</height>
-				<aspectratio>stretch</aspectratio>
-				<texture>blades-size3-right-NF.png</texture>
-				<visible>Control.HasFocus(1)</visible>
-				<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
-			</control>
-			<control type="label">
-				<description>Apps Label</description>
-				<label>31002</label>
-				<posx>150r</posx>
-				<posy>190</posy>
-				<font>font16</font>
-				<textcolor>black</textcolor>
-				<align>left</align>
-				<aligny>middle</aligny>
-				<angle>270</angle>
-				<visible>Control.HasFocus(1)</visible>
-				<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
-			</control>
-		</control>
 		<include>Common_Now_Playing</include>
 	</controls>	
 </window>

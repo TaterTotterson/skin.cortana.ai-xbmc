@@ -157,6 +157,19 @@
 		</control>
 		<include>RainDropAnimationBackground</include>
 	</include>
+	<include name="CommonTaterBackground">
+		<control type="image">
+			<description>Background Tater</description>
+			<posx>0</posx>
+			<posy>0</posy>
+			<width>1280</width>
+			<height>720</height>
+			<aspectratio>stretch</aspectratio>
+			<texture background="true">special://skin/backgrounds/background-orange-alpha.png</texture>
+			<animation effect="fade" start="100" end="70" time="200" condition="[!IsEmpty(ListItem.Property(Fanart_Image)) + !Skin.HasSetting(Back_Fanart)] | [Player.HasVideo + !Skin.HasSetting(Back_Video)] | [Player.HasAudio + !Skin.HasSetting(Back_Vis)]">Conditional</animation>
+		</control>
+		<include>RainDropAnimationBackground</include>
+	</include>
 
 <!-- Blackwash Backgrounds -->
 	<include name="CommonWeatherBlackwash">

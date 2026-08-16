@@ -1,0 +1,638 @@
+<window id="1113">
+	<defaultcontrol always="true">3101</defaultcontrol>
+	<previouswindow>Settings</previouswindow>
+	<allowoverlay>no</allowoverlay>
+	<animation effect="fade" start="100" end="100" time="30" condition="Control.HasFocus(1)">WindowClose</animation>
+	<controls>
+		<include condition="!Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
+		<control type="group">
+			<animation effect="slide" start="0,0" end="1280,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(1)">Conditional</animation>
+			<include>CommonTaterBackground</include>
+		</control>
+		<control type="group">
+			<visible>Control.HasFocus(1)</visible>
+			<animation effect="slide" start="-1280,0" end="0,0" time="HomeBladeAnimationSpeed" condition="Control.HasFocus(1)">Conditional</animation>
+			<include>CommonSystemBackground</include>
+		</control>
+		<include condition="Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
+<!-- Blackwash Background -->
+		<control type="group">
+			<animation effect="slide" end="-50,0" time="0" condition="Control.HasFocus(1)">Conditional</animation>
+			<control type="image">
+				<description>Background</description>
+				<posx>255</posx>
+				<posy>0</posy>
+				<width>50</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-left-ws.png</texture>
+			</control>
+			<control type="image">
+				<description>Background</description>
+				<posx>5r</posx>
+				<posy>0</posy>
+				<width>50</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-right-ws.png</texture>
+			</control>
+			<control type="image">
+				<description>Background</description>
+				<posx>305</posx>
+				<posy>0</posy>
+				<width>970</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-centertile-ws.png</texture>
+			</control>
+		</control>
+<!-- Blackwash Background End-->
+		<control type="group">
+			<posx>330</posx>
+			<visible>!Control.HasFocus(1)</visible>
+			<animation effect="fade" time="HomeVisibleFadeAnimationSpeed">WindowOpen</animation>
+			<control type="label">
+				<description>Header label</description>
+				<posx>0</posx>
+				<label>Tater</label>
+				<include>HeaderTextCommons</include>
+			</control>
+			<control type="label">
+				<description>Time label</description>
+				<posx>840</posx>
+				<include>ClockTextCommons</include>
+			</control>
+			<control type="image">
+				<description>Tater Logo</description>
+				<posx>10</posx>
+				<posy>78</posy>
+				<width>620</width>
+				<height>160</height>
+				<aspectratio>keep</aspectratio>
+				<texture>special://skin/media/tater-logo-primary.png</texture>
+			</control>
+			<control type="label">
+				<posx>20</posx>
+				<posy>260</posy>
+				<width>430</width>
+				<height>32</height>
+				<font>font30</font>
+				<aligny>center</aligny>
+				<textcolor>orange</textcolor>
+				<label>Cortana AI XBMC Skin</label>
+			</control>
+			<control type="label">
+				<posx>20</posx>
+				<posy>300</posy>
+				<width>430</width>
+				<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Installed: $INFO[Skin.String(TaterSkin.InstalledVersion)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.InstalledVersion))</visible>
+				</control>
+				<control type="label">
+					<posx>20</posx>
+					<posy>300</posy>
+					<width>430</width>
+					<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Installed: 2.15</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.InstalledVersion))</visible>
+				</control>
+				<control type="label">
+					<posx>20</posx>
+				<posy>330</posy>
+				<width>430</width>
+				<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Latest: $INFO[Skin.String(TaterSkin.LatestVersion)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.LatestVersion))</visible>
+				</control>
+				<control type="label">
+					<posx>20</posx>
+					<posy>330</posy>
+					<width>430</width>
+					<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Latest: --</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.LatestVersion))</visible>
+				</control>
+				<control type="label">
+					<posx>20</posx>
+				<posy>360</posy>
+				<width>430</width>
+				<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>grey2</textcolor>
+					<label>Release: $INFO[Skin.String(TaterSkin.LatestTag)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.LatestTag))</visible>
+				</control>
+				<control type="label">
+					<posx>20</posx>
+					<posy>360</posy>
+					<width>430</width>
+					<height>26</height>
+					<font>font13</font>
+					<aligny>center</aligny>
+					<textcolor>grey2</textcolor>
+					<label>Release: --</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.LatestTag))</visible>
+				</control>
+				<control type="image">
+					<description>Divider</description>
+				<posx>500</posx>
+				<posy>254</posy>
+				<width>420</width>
+				<height>2</height>
+				<texture>divider.png</texture>
+			</control>
+			<control type="label">
+				<posx>500</posx>
+				<posy>270</posy>
+				<width>420</width>
+				<height>28</height>
+				<font>font13</font>
+				<aligny>center</aligny>
+				<textcolor>orange</textcolor>
+				<label>Update Status</label>
+			</control>
+			<control type="textbox">
+				<posx>500</posx>
+				<posy>304</posy>
+				<width>420</width>
+					<height>90</height>
+					<font>font13</font>
+					<textcolor>white2</textcolor>
+					<label>$INFO[Skin.String(TaterSkin.Status)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.Status))</visible>
+				</control>
+				<control type="textbox">
+					<posx>500</posx>
+					<posy>304</posy>
+					<width>420</width>
+					<height>90</height>
+					<font>font13</font>
+					<textcolor>white2</textcolor>
+					<label>Press Check Update to ask Tater for the latest GitHub release.</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.Status))</visible>
+				</control>
+				<control type="label">
+					<posx>500</posx>
+				<posy>414</posy>
+				<width>420</width>
+				<height>26</height>
+				<font>font13</font>
+				<aligny>center</aligny>
+				<textcolor>orange</textcolor>
+				<label>Tater Tube</label>
+			</control>
+			<control type="label">
+				<posx>500</posx>
+				<posy>444</posy>
+				<width>420</width>
+				<height>26</height>
+					<font>font12</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Server: $INFO[Skin.String(TaterSkin.TaterTubeServer)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.TaterTubeServer))</visible>
+				</control>
+				<control type="label">
+					<posx>500</posx>
+					<posy>444</posy>
+					<width>420</width>
+					<height>26</height>
+					<font>font12</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Server: Not paired</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.TaterTubeServer))</visible>
+				</control>
+				<control type="label">
+					<posx>500</posx>
+				<posy>472</posy>
+				<width>420</width>
+				<height>26</height>
+					<font>font12</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Player: $INFO[Skin.String(TaterSkin.TaterTubePlayer)]</label>
+					<visible>!IsEmpty(Skin.String(TaterSkin.TaterTubePlayer))</visible>
+				</control>
+				<control type="label">
+					<posx>500</posx>
+					<posy>472</posy>
+					<width>420</width>
+					<height>26</height>
+					<font>font12</font>
+					<aligny>center</aligny>
+					<textcolor>white2</textcolor>
+					<label>Player: Original Xbox</label>
+					<visible>IsEmpty(Skin.String(TaterSkin.TaterTubePlayer))</visible>
+				</control>
+				<control type="button" id="3101">
+				<posx>20</posx>
+				<posy>430</posy>
+				<width>205</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>Check Update</label>
+				<onleft>1</onleft>
+				<onright>3102</onright>
+				<onup>3105</onup>
+				<ondown>3103</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\skinupdate.py,Check)</onclick>
+			</control>
+			<control type="button" id="3102">
+				<posx>245</posx>
+				<posy>430</posy>
+				<width>205</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+					<label>Update Skin</label>
+					<onleft>3101</onleft>
+					<onright>10</onright>
+					<onup>3105</onup>
+					<ondown>3104</ondown>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\skinupdate.py,Update)</onclick>
+			</control>
+			<control type="button" id="3103">
+				<posx>20</posx>
+				<posy>482</posy>
+				<width>205</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>Reload Skin</label>
+				<onleft>1</onleft>
+				<onright>3104</onright>
+				<onup>3101</onup>
+				<ondown>3105</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\skinupdate.py,Reload)</onclick>
+			</control>
+			<control type="button" id="3104">
+				<posx>245</posx>
+				<posy>482</posy>
+				<width>205</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+					<label>Settings</label>
+					<onleft>3103</onleft>
+					<onright>11</onright>
+					<onup>3102</onup>
+					<ondown>3105</ondown>
+					<onclick>ActivateWindow(Settings)</onclick>
+			</control>
+			<control type="button" id="3105">
+				<posx>20</posx>
+				<posy>534</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+					<label>Home</label>
+					<onleft>1</onleft>
+					<onright>10</onright>
+					<onup>3103</onup>
+					<ondown>3101</ondown>
+					<onclick>ActivateWindow(Home)</onclick>
+				</control>
+			</control>
+			<control type="group">
+				<posx>74r</posx>
+				<posy>232</posy>
+				<animation effect="slide" start="100,0" end="0,0" time="HomeBladeAnimationSpeed">WindowOpen</animation>
+				<visible>!Control.HasFocus(1)</visible>
+				<control type="image">
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>74</width>
+					<height>256</height>
+					<aspectratio>stretch</aspectratio>
+					<texture border="25,5,5,5">power-panel.png</texture>
+				</control>
+				<control type="button" id="10">
+					<description>Shutdown Button</description>
+					<posx>5</posx>
+					<posy>0</posy>
+					<width>64</width>
+					<height>128</height>
+					<texturenofocus>-</texturenofocus>
+					<texturefocus>power-panel-focus1.png</texturefocus>
+					<onclick>ActivateWindow(ShutdownMenu)</onclick>
+					<onleft>3102</onleft>
+					<onright>10</onright>
+					<onup>11</onup>
+					<ondown>11</ondown>
+				</control>
+				<control type="button" id="11">
+					<description>Favourites Button</description>
+					<posx>5</posx>
+					<posy>128</posy>
+					<width>64</width>
+					<height>128</height>
+					<texturenofocus>-</texturenofocus>
+					<texturefocus flipy="true">power-panel-focus1.png</texturefocus>
+					<onclick>ActivateWindow(Favourites)</onclick>
+					<onleft>3104</onleft>
+					<onright>11</onright>
+					<onup>10</onup>
+					<ondown>10</ondown>
+				</control>
+				<control type="image">
+					<description>Icon</description>
+					<posx>18</posx>
+					<posy>50</posy>
+					<width>40</width>
+					<height>40</height>
+					<aspectratio>keep</aspectratio>
+					<texture>special://skin/button_icons/icon-power.png</texture>
+				</control>
+				<control type="image">
+					<description>Icon</description>
+					<posx>18</posx>
+					<posy>165</posy>
+					<width>40</width>
+					<height>40</height>
+					<aspectratio>keep</aspectratio>
+					<texture>special://skin/button_icons/icon-favourites.png</texture>
+				</control>
+			</control>
+			<control type="button" id="1">
+			<description>Blank Blade Slide Right</description>
+			<posx>-80</posx>
+			<posy>0</posy>
+			<width>160</width>
+			<height>720</height>
+			<texturefocus>blades-blank-left.png</texturefocus>
+			<onfocus>ActivateWindow(Settings)</onfocus>
+			<animation effect="slide" end="1280,0" time="HomeBladeAnimationSpeed">focus</animation>
+			<hitrect x="-10" y="-10" w="1" h="1" />
+		</control>
+		<control type="group">
+			<visible>!Control.HasFocus(1)</visible>
+			<!-- Left side -->
+			<control type="image">
+				<posx>-110</posx>
+				<posy>-40</posy>
+				<width>180</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-runner-left.png</texture>
+			</control>
+			<control type="image">
+				<posx>0</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size1-left-NF.png</texture>
+			</control>
+			<control type="label">
+				<label>31004</label>
+				<posx>90</posx>
+				<posy>210</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>50</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size2-left-NF.png</texture>
+			</control>
+			<control type="label">
+				<label>31002</label>
+				<posx>140</posx>
+				<posy>200</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>100</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size3-left-NF.png</texture>
+			</control>
+			<control type="label">
+				<label>31001</label>
+				<posx>190</posx>
+				<posy>190</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>150</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size3-left-NF.png</texture>
+			</control>
+			<control type="label">
+				<label>31003</label>
+				<posx>240</posx>
+				<posy>180</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>200</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size4-header.png</texture>
+			</control>
+			<control type="label">
+				<label>Tater</label>
+				<posx>290</posx>
+				<posy>170</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<!-- Right side -->
+				<control type="image">
+					<posx>5r</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-right.png</texture>
+				</control>
+			</control>
+			<control type="group">
+				<description>System Blades</description>
+				<visible>Control.HasFocus(1)</visible>
+				<!-- Left side -->
+				<control type="image">
+					<posx>-110</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-left.png</texture>
+				</control>
+				<control type="image">
+					<posx>0</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size1-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>weather Label</description>
+					<label>31004</label>
+					<posx>90</posx>
+					<posy>210</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>50</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Apps Label</description>
+					<label>31002</label>
+					<posx>140</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>100</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size3-left-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Media Label</description>
+					<label>31001</label>
+					<posx>190</posx>
+					<posy>190</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+				<control type="image">
+					<posx>150</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size4-header.png</texture>
+					<visible>Control.HasFocus(1)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
+				<control type="label">
+					<description>System Label</description>
+					<label>31003</label>
+					<posx>240</posx>
+					<posy>170</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+					<visible>Control.HasFocus(1)</visible>
+					<animation effect="fade" time="HomeBladeAnimationSpeed">visible</animation>
+				</control>
+				<!-- Right side -->
+				<control type="image">
+					<posx>55r</posx>
+					<posy>-40</posy>
+					<width>180</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-runner-right.png</texture>
+				</control>
+				<control type="image">
+					<posx>115r</posx>
+					<posy>-40</posy>
+					<width>115</width>
+					<height>800</height>
+					<aspectratio>stretch</aspectratio>
+					<texture>blades-size2-right-NF.png</texture>
+				</control>
+				<control type="label">
+					<description>Tater Label</description>
+					<label>Tater</label>
+					<posx>50r</posx>
+					<posy>200</posy>
+					<font>font16</font>
+					<textcolor>black</textcolor>
+					<align>left</align>
+					<aligny>middle</aligny>
+					<angle>270</angle>
+				</control>
+			</control>
+			<include>Common_Now_Playing</include>
+	</controls>
+</window>

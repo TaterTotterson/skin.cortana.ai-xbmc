@@ -259,49 +259,6 @@
 							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
 						</item>
 						<item>
-							<label>31026</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py)</onclick>
-							<icon>special://skin/button_icons/icon-insignia.png</icon>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>31028</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Sessions)</onclick>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>31029</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Statistics)</onclick>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>> Events</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\insignia.py,Events)</onclick>
-							<thumb>-</thumb>
-						</item>
-
-						<item>
-							<label>31027</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py)</onclick>
-							<icon>special://skin/button_icons/icon-xlinkkai.png</icon>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>31028</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Sessions)</onclick>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>31029</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Statistics)</onclick>
-							<thumb>-</thumb>
-						</item>
-						<item>
-							<label>31030</label>
-							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\serverbrowser\xlinkkai.py,Events)</onclick>
-							<thumb>-</thumb>
-						</item>
-						<item>
 							<label>31031</label>
 							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py)</onclick>
 							<icon>special://skin/button_icons/icon-cortana.png</icon>
@@ -374,8 +331,8 @@
 				<texture>blades-size1-right-NF.png</texture>
 			</control>
 			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
+				<description>Tater Label</description>
+				<label>Tater</label>
 				<posx>50r</posx>
 				<posy>210</posy>
 				<font>font16</font>
@@ -393,8 +350,8 @@
 				<texture>blades-size2-right-NF.png</texture>
 			</control>
 			<control type="label">
-				<description>Media Label</description>
-				<label>31001</label>
+				<description>System Label</description>
+				<label>31003</label>
 				<posx>100r</posx>
 				<posy>200</posy>
 				<font>font16</font>
@@ -412,10 +369,29 @@
 				<texture>blades-size3-right-NF.png</texture>
 			</control>
 			<control type="label">
-				<description>Apps Label</description>
-				<label>31002</label>
+				<description>Media Label</description>
+				<label>31001</label>
 				<posx>150r</posx>
 				<posy>190</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>265r</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>blades-size3-right-NF.png</texture>
+			</control>
+			<control type="label">
+				<description>Apps Label</description>
+				<label>31002</label>
+				<posx>200r</posx>
+				<posy>180</posy>
 				<font>font16</font>
 				<textcolor>black</textcolor>
 				<align>left</align>
@@ -493,13 +469,13 @@
 				<width>115</width>
 				<height>800</height>
 				<aspectratio>stretch</aspectratio>
-				<texture>blades-size2-right-NF.png</texture>
+				<texture>blades-size1-right-NF.png</texture>
 			</control>
 			<control type="label">
-				<description>System Label</description>
-				<label>31003</label>
+				<description>Tater Label</description>
+				<label>Tater</label>
 				<posx>50r</posx>
-				<posy>200</posy>
+				<posy>210</posy>
 				<font>font16</font>
 				<textcolor>black</textcolor>
 				<align>left</align>
@@ -512,12 +488,31 @@
 				<width>115</width>
 				<height>800</height>
 				<aspectratio>stretch</aspectratio>
+				<texture>blades-size2-right-NF.png</texture>
+			</control>
+			<control type="label">
+				<description>System Label</description>
+				<label>31003</label>
+				<posx>100r</posx>
+				<posy>200</posy>
+				<font>font16</font>
+				<textcolor>black</textcolor>
+				<align>left</align>
+				<aligny>middle</aligny>
+				<angle>270</angle>
+			</control>
+			<control type="image">
+				<posx>215r</posx>
+				<posy>-40</posy>
+				<width>115</width>
+				<height>800</height>
+				<aspectratio>stretch</aspectratio>
 				<texture>blades-size3-right-NF.png</texture>
 			</control>
 			<control type="label">
 				<description>Media Label</description>
 				<label>31001</label>
-				<posx>100r</posx>
+				<posx>150r</posx>
 				<posy>190</posy>
 				<font>font16</font>
 				<textcolor>black</textcolor>

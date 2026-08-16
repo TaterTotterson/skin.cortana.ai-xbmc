@@ -22,6 +22,7 @@ DOWNLOAD_CHUNK_BYTES = 64 * 1024
 MIN_VIDEO_BYTES = 10 * 1024 * 1024
 HOME_REFOCUS_ATTEMPTS = 4
 HOME_REFOCUS_DELAY_SECONDS = 0.5
+BG_VIDEO_VOLUME = 60
 
 
 def log(message):
@@ -67,6 +68,16 @@ def get_playing_file(player):
         return ""
 
 
+def set_background_video_volume():
+    try:
+        xbmc.executebuiltin("SetVolume(%d,false)" % BG_VIDEO_VOLUME)
+        log("Set background video volume to %d%%" % BG_VIDEO_VOLUME)
+        return True
+    except Exception as error:
+        log("Unable to set background video volume: %s" % error)
+        return False
+
+
 def should_start_background_video():
     player = xbmc.Player()
 
@@ -78,6 +89,7 @@ def should_start_background_video():
 
     current_file = normalize_path(get_playing_file(player))
     if current_file == normalize_path(VIDEO_PATH):
+        set_background_video_volume()
         log("Background video is already playing")
     elif current_file:
         log("Media is already playing; leaving it alone: %s" % current_file)
@@ -210,6 +222,8 @@ def play_video():
     while not player.isPlaying() and wait_time < max_wait:
         time.sleep(0.1)
         wait_time += 0.1
+
+    set_background_video_volume()
 
     for _ in range(HOME_REFOCUS_ATTEMPTS):
         time.sleep(HOME_REFOCUS_DELAY_SECONDS)

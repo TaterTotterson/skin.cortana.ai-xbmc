@@ -9,6 +9,8 @@
 #
 
 import os
+import random
+import re
 import socket
 import sys
 import threading
@@ -23,6 +25,16 @@ try:
     import json
 except ImportError:
     import simplejson as json
+
+try:
+    import sqlite3
+except Exception:
+    sqlite3 = None
+
+try:
+    import xml.etree.ElementTree as ElementTree
+except Exception:
+    ElementTree = None
 
 try:
     basestring
@@ -42,21 +54,49 @@ SETTINGS_FILE = os.path.join(xbmc.translatePath('special://profile'), 'cortana_c
 CORTANA_STATE_FILE = os.path.join(xbmc.translatePath('special://profile'), 'cortana_overlay_state.json')
 CORTANA_OVERLAY_WINDOW_ID = 9016
 CORTANA_PROPERTY_WINDOW_ID = 10000
+GAMES_FILE = xbmc.translatePath('special://home/games.txt')
+PROGRAM_DATABASE_PATHS = (
+    xbmc.translatePath('special://profile/Database/MyPrograms6.db'),
+    xbmc.translatePath('special://home/UserData/Database/MyPrograms6.db'),
+    "Q:\\UserData\\Database\\MyPrograms6.db",
+    "E:\\Dashboard\\UserData\\Database\\MyPrograms6.db",
+)
+PROGRAM_SOURCES_PATHS = (
+    xbmc.translatePath('special://profile/sources.xml'),
+    xbmc.translatePath('special://home/UserData/sources.xml'),
+    "Q:\\UserData\\sources.xml",
+    "E:\\Dashboard\\UserData\\sources.xml",
+)
+GAME_CONTEXT_MAX_ITEMS = 1200
+QUICK_ASK_COUNT = 4
+LAUNCH_QUICK_ASK_COUNT = 2
+WATCH_TATER_TUBE_LABEL = "Watch Tater Tube"
+QUICK_ASKS_LABEL = "Quick Asks"
+RECENT_GAME_RECOMMENDATION_LIMIT = 12
+TATER_TUBE_SCRIPT_PATH = "Q:\\skin\\skin.cortana.ai\\scripts\\tatertube\\default.py"
+SAFE_SINGLE_WORD_GAME_ALIASES = {"halo"}
+INSTALLED_GAMES_CACHE_SECONDS = 300
+INSTALLED_GAMES_CACHE = {"loaded_at": 0, "games": None}
 TTS_ENABLED = True
 TTS_MAX_CHARS = 900
+TTS_HTTP_TIMEOUT_SECONDS = 60
+TTS_RETRY_COUNT = 2
+TTS_RETRY_DELAY_SECONDS = 1.0
 TTS_CACHE_DIR = os.path.join(xbmc.translatePath('special://profile'), 'cortana_tts')
 TTS_PAUSE_BGVIDEO_ENABLED = True
 BG_VIDEO_PATH = "E:\\BGVideo\\BGVideo.avi"
+BG_VIDEO_VOLUME = 60
+TTS_VOLUME = 100
 TTS_PLAY_EXTRA_SECONDS = 0.35
 TTS_LOCK = threading.Lock()
 
 # Shared quick-ask prompts (used by both full chat and QuickAsks-only mode)
 QUICK_ASK_ITEMS = [
-    "Recommend an original Xbox game to play",
+    "Recommend three installed original Xbox games to play now. Do not ask my genre first.",
     "What's a hidden gem on the original Xbox?",
     "Give me a fun fact about the original Xbox",
     "Tell me about yourself Cortana?",
-    "Recommend a multiplayer original Xbox game for tonight",
+    "Recommend three installed multiplayer original Xbox games for tonight. Do not ask my genre first.",
     "Turn the lights in the game room to blue",
     "What tools do you have available?",
     "What is your real name?",
@@ -71,6 +111,35 @@ def _log(msg):
             print("CortanaChat: %s" % msg)
         except Exception:
             pass
+
+
+def _time_of_day(hour):
+    try:
+        value = int(hour)
+    except Exception:
+        value = 12
+
+    if 5 <= value < 12:
+        return "morning"
+    if 12 <= value < 17:
+        return "afternoon"
+    if 17 <= value < 22:
+        return "evening"
+    return "late night"
+
+
+def _local_time_context():
+    try:
+        hour = int(time.strftime("%H"))
+        local_time = time.strftime("%I:%M %p").lstrip("0")
+        return {
+            "local_time": local_time,
+            "weekday": time.strftime("%A"),
+            "time_of_day": _time_of_day(hour),
+            "hour": hour,
+        }
+    except Exception:
+        return {}
 
 
 def _tater_base_url():
@@ -153,12 +222,36 @@ def _button_label(text, limit=40):
 def _fallback_quick_asks(user_text="", reply_text=""):
     combined = ("%s %s" % (user_text, reply_text)).lower()
     if "light" in combined:
-        return ["Set the lights to blue", "Turn the lights off", "What else can you control?"]
+        return [
+            "Set the lights to blue",
+            "Turn the lights off",
+            "Dim the lights",
+            "Set game room mode",
+            "What else can you control?",
+        ]
     if "game" in combined or "xbox" in combined:
-        return ["Tell me more about that game", "Recommend another game", "Find a multiplayer game"]
+        return [
+            "Recommend three installed games",
+            "Find a multiplayer game",
+            "Pick a hidden gem",
+            "Tell me more about that game",
+            "Surprise me",
+        ]
     if "news" in combined:
-        return ["Tell me the top story", "Any Insignia updates?", "Find more Xbox news"]
-    return ["Tell me more", "What can you do next?", "Give me a quick suggestion"]
+        return [
+            "Tell me the top story",
+            "Any Insignia updates?",
+            "Find more Xbox news",
+            "What's new for homebrew?",
+            "Summarize it shorter",
+        ]
+    return [
+        "Tell me more",
+        "What can you do next?",
+        "Give me a quick suggestion",
+        "Make it shorter",
+        "Surprise me",
+    ]
 
 
 def _extract_quick_asks(obj, user_text="", reply_text=""):
@@ -170,18 +263,754 @@ def _extract_quick_asks(obj, user_text="", reply_text=""):
                 ask = _clean_quick_ask(item)
                 if ask and ask not in asks:
                     asks.append(ask)
-                if len(asks) >= 3:
+                if len(asks) >= QUICK_ASK_COUNT:
                     break
 
-    if len(asks) < 3:
+    if len(asks) < QUICK_ASK_COUNT:
         for fallback in _fallback_quick_asks(user_text, reply_text):
             ask = _clean_quick_ask(fallback)
             if ask and ask not in asks:
                 asks.append(ask)
-            if len(asks) >= 3:
+            if len(asks) >= QUICK_ASK_COUNT:
                 break
 
-    return asks[:3]
+    return asks[:QUICK_ASK_COUNT]
+
+
+def _parse_game_line(line):
+    text = str(line or "").strip()
+    if not text or not text.startswith('"') or not text.endswith('"'):
+        return None
+
+    try:
+        name, path = text[1:-1].split('", "', 1)
+    except Exception:
+        return None
+
+    name = str(name or "").strip()
+    path = str(path or "").strip()
+    if not name or not path:
+        return None
+
+    return {"name": name, "path": path}
+
+
+def _path_exists(path):
+    try:
+        return path and os.path.exists(path)
+    except Exception:
+        return False
+
+
+def _unique_existing_paths(paths):
+    values = []
+    seen = {}
+    for path in paths:
+        value = str(path or "").strip()
+        key = _normalize_path(value)
+        if not value or key in seen:
+            continue
+        seen[key] = True
+        if _path_exists(value):
+            values.append(value)
+    return values
+
+
+def _normalize_source_prefix(path):
+    value = _normalize_path(path).strip()
+    if value and not value.endswith("\\"):
+        value += "\\"
+    return value
+
+
+def _path_under_source(path, source_prefixes):
+    normalized = _normalize_path(path)
+    if not normalized:
+        return False
+    for prefix in source_prefixes:
+        if prefix and normalized.startswith(prefix):
+            return True
+    return False
+
+
+def _load_program_sources():
+    sources = []
+
+    if ElementTree is None:
+        return sources
+
+    for sources_path in _unique_existing_paths(PROGRAM_SOURCES_PATHS):
+        try:
+            tree = ElementTree.parse(sources_path)
+            root = tree.getroot()
+            programs = root.find("programs")
+            if programs is None:
+                continue
+
+            for source in programs.findall("source"):
+                name_node = source.find("name")
+                source_name = name_node.text if name_node is not None else ""
+                for path_node in source.findall("path"):
+                    source_path = str(path_node.text or "").strip()
+                    if source_path:
+                        sources.append({"name": str(source_name or "").strip(), "path": source_path})
+
+            if sources:
+                return sources
+        except Exception as e:
+            _log("Program sources load failed from %s: %s" % (sources_path, e))
+
+    return sources
+
+
+def _game_source_prefixes():
+    sources = _load_program_sources()
+    selected = []
+
+    for source in sources:
+        source_name = str(source.get("name") or "").lower()
+        source_path = str(source.get("path") or "")
+        normalized_path = _normalize_source_prefix(source_path)
+        if not normalized_path:
+            continue
+        if "game" in source_name or "\\games\\" in normalized_path or normalized_path.endswith("\\games\\"):
+            selected.append(normalized_path)
+
+    if not selected:
+        for source in sources:
+            normalized_path = _normalize_source_prefix(source.get("path"))
+            if normalized_path:
+                selected.append(normalized_path)
+
+    unique = []
+    seen = {}
+    for prefix in selected:
+        if prefix not in seen:
+            seen[prefix] = True
+            unique.append(prefix)
+
+    return unique
+
+
+def _parent_folder_from_xbe_path(path):
+    value = str(path or "").replace("/", "\\").rstrip("\\")
+    if not value:
+        return ""
+
+    parts = value.split("\\")
+    if len(parts) >= 2 and parts[-1].lower() == "default.xbe":
+        return parts[-2]
+    if parts:
+        return parts[-1]
+    return ""
+
+
+def _clean_installed_game_name(name):
+    original = str(name or "").replace("_", " ").strip()
+    text = original
+    if not text:
+        return ""
+
+    region_suffix = re.compile(
+        r"\s*[\(\[]\s*"
+        r"(usa[ ._-]*pal|pal[ ._-]*usa|usa|u|europe|eur|e|japan|jpn|j|"
+        r"world|glo|global|region free|aus|australia|"
+        r"de|ger|germany|fr|fra|french|es|spa|spanish|it|ita|italian|"
+        r"kor|korea|asia|cn|china|"
+        r"ntsc[^)\]]*|pal[^)\]]*|rev[ ._-]*[a-z0-9]+|"
+        r"en[,\- a-z]*|multi[0-9]*|beta|prototype|proto|demo|sample|"
+        r"disc[ ._-]*[0-9]+|dvd[ ._-]*[0-9]+)"
+        r"\s*[\)\]]\s*$",
+        re.I,
+    )
+
+    changed = True
+    while changed:
+        cleaned = region_suffix.sub("", text).strip()
+        changed = cleaned != text
+        text = cleaned
+
+    text = " ".join(text.split()).strip(" -")
+    return text or original
+
+
+def _db_game_from_row(row):
+    filename = str(row[0] or "").strip() if len(row) > 0 else ""
+    xbe_description = str(row[1] or "").strip() if len(row) > 1 else ""
+    plays = row[2] if len(row) > 2 else 0
+    last_accessed = row[3] if len(row) > 3 else 0
+    folder_name = _parent_folder_from_xbe_path(filename)
+    name = _clean_installed_game_name(folder_name or xbe_description)
+
+    if not name or not filename:
+        return None
+
+    game = {"name": name, "path": filename, "source": "xbmc_programs"}
+    if xbe_description:
+        game["xbe_description"] = xbe_description
+    if plays:
+        game["plays"] = plays
+    if last_accessed:
+        game["last_accessed"] = last_accessed
+    return game
+
+
+def _load_xbmc_program_games(limit=0):
+    games = []
+    seen = {}
+
+    if sqlite3 is None:
+        _log("XBMC Programs DB unavailable: sqlite3 is not installed")
+        return games
+
+    source_prefixes = _game_source_prefixes()
+    query = (
+        "select strFilename, xbedescription, iTimesPlayed, lastAccessed "
+        "from files "
+        "where strFilename is not null and lower(strFilename) like '%default.xbe' "
+        "order by iTimesPlayed desc, lastAccessed desc, xbedescription collate nocase, strFilename collate nocase"
+    )
+
+    for db_path in _unique_existing_paths(PROGRAM_DATABASE_PATHS):
+        conn = None
+        try:
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute(query)
+
+            for row in cursor:
+                game = _db_game_from_row(row)
+                if not game:
+                    continue
+
+                path = game.get("path")
+                if source_prefixes and not _path_under_source(path, source_prefixes):
+                    continue
+
+                key = _normalize_path(path)
+                if key in seen:
+                    continue
+                seen[key] = True
+                games.append(game)
+
+                if limit and len(games) >= limit:
+                    break
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+            if games:
+                _log("Loaded %d installed games from XBMC Programs DB" % len(games))
+                return games
+        except Exception as e:
+            _log("XBMC Programs DB load failed from %s: %s" % (db_path, e))
+        finally:
+            try:
+                if conn:
+                    conn.close()
+            except Exception:
+                pass
+
+    return games
+
+
+def _load_games_file(limit=0):
+    games = []
+    seen = {}
+
+    try:
+        if not os.path.exists(GAMES_FILE):
+            return games
+
+        f = open(GAMES_FILE, "r")
+        try:
+            for line in f:
+                game = _parse_game_line(line)
+                if not game:
+                    continue
+
+                key = _normalize_path(game.get("path"))
+                if key in seen:
+                    continue
+                seen[key] = True
+                games.append(game)
+
+                if limit and len(games) >= limit:
+                    break
+        finally:
+            f.close()
+    except Exception as e:
+        _log("Installed games file load failed: %s" % e)
+
+    return games
+
+
+def _load_installed_games(limit=0):
+    now = time.time()
+    cached_games = INSTALLED_GAMES_CACHE.get("games")
+    cached_at = INSTALLED_GAMES_CACHE.get("loaded_at") or 0
+
+    if cached_games is not None and (now - cached_at) < INSTALLED_GAMES_CACHE_SECONDS:
+        games = list(cached_games)
+        return games[:limit] if limit else games
+
+    games = _load_xbmc_program_games()
+    if not games:
+        games = _load_games_file()
+
+    INSTALLED_GAMES_CACHE["loaded_at"] = now
+    INSTALLED_GAMES_CACHE["games"] = list(games)
+
+    return games[:limit] if limit else games
+
+
+def _should_include_game_context(message):
+    text = str(message or "").lower()
+    terms = (
+        "game", "games", "play", "launch", "start", "load", "boot", "recommend",
+        "suggest", "find", "pick", "hidden", "gem", "surprise", "library",
+        "installed", "racing", "sports", "shooter", "multiplayer", "co-op",
+        "coop", "xbox"
+    )
+    for term in terms:
+        if term in text:
+            return True
+    return False
+
+
+def _installed_games_payload(message):
+    if not _should_include_game_context(message):
+        return []
+
+    payload = []
+    for game in _load_installed_games(GAME_CONTEXT_MAX_ITEMS):
+        name = str(game.get("name") or "").strip()
+        if name:
+            payload.append({"name": name})
+    return payload
+
+
+def _normalize_game_text(text):
+    raw = str(text or "").lower()
+    chars = []
+    last_space = False
+    for ch in raw:
+        if ("a" <= ch <= "z") or ("0" <= ch <= "9"):
+            chars.append(ch)
+            last_space = False
+        else:
+            if not last_space:
+                chars.append(" ")
+                last_space = True
+    return " ".join("".join(chars).split())
+
+
+def _game_match_aliases(name):
+    raw = str(name or "").strip()
+    aliases = []
+    candidates = [raw]
+
+    for separator in (" - ", ": "):
+        if separator in raw:
+            candidates.append(raw.split(separator, 1)[0])
+
+    for candidate in candidates:
+        normalized = _normalize_game_text(candidate)
+        if len(normalized) < 4:
+            continue
+        if " " not in normalized and normalized not in SAFE_SINGLE_WORD_GAME_ALIASES:
+            continue
+        if normalized not in aliases:
+            aliases.append(normalized)
+
+    return aliases
+
+
+def _game_state_list(value):
+    games = []
+    seen = {}
+
+    if isinstance(value, dict):
+        values = [value]
+    elif isinstance(value, list):
+        values = value
+    else:
+        values = []
+
+    for game in values:
+        if not isinstance(game, dict):
+            continue
+        path_key = _normalize_path(game.get("path"))
+        name_key = _normalize_game_text(game.get("name"))
+        key = path_key or name_key
+        if not key or key in seen:
+            continue
+        seen[key] = True
+        games.append(game)
+
+    return games
+
+
+def _find_installed_games_in_text(text, max_items=0):
+    normalized_text = " %s " % _normalize_game_text(text)
+    games = _load_installed_games()
+    games.sort(key=lambda item: len(str(item.get("name") or "")), reverse=True)
+    matches = []
+    seen = {}
+    exact_aliases = {}
+
+    for game in games:
+        name = str(game.get("name") or "").strip()
+        normalized_name = _normalize_game_text(name)
+        if not normalized_name:
+            continue
+
+        pos = normalized_text.find(" %s " % normalized_name)
+        if pos < 0:
+            continue
+
+        key = _normalize_path(game.get("path")) or normalized_name
+        if key in seen:
+            continue
+        seen[key] = True
+        exact_aliases[normalized_name] = True
+        matches.append((pos, -len(normalized_name), game))
+
+    for game in games:
+        name = str(game.get("name") or "").strip()
+        key = _normalize_path(game.get("path")) or _normalize_game_text(name)
+        if key in seen:
+            continue
+
+        aliases = _game_match_aliases(name)
+        for alias in aliases[1:]:
+            if alias in exact_aliases:
+                continue
+
+            pos = normalized_text.find(" %s " % alias)
+            if pos < 0:
+                continue
+
+            seen[key] = True
+            matches.append((pos, -len(alias), game))
+            break
+
+    matches.sort(key=lambda item: (item[0], item[1]))
+    result = [item[2] for item in matches]
+    return result[:max_items] if max_items else result
+
+
+def _find_installed_game_in_text(text):
+    games = _find_installed_games_in_text(text, 1)
+    return games[0] if games else None
+
+
+def _strip_launch_text(text):
+    value = _clean_quick_ask(text).lower()
+    prefixes = (
+        "please launch ", "please play ", "please start ", "please load ",
+        "can you launch ", "can you play ", "can you start ", "can you load ",
+        "could you launch ", "could you play ", "could you start ", "could you load ",
+        "i want to launch ", "i want to play ", "i want to start ", "i want to load ",
+        "launch ", "play ", "start ", "load ", "boot ", "run ",
+    )
+    for prefix in prefixes:
+        if value.startswith(prefix):
+            return value[len(prefix):].strip()
+    return value
+
+
+def _game_launch_aliases(name):
+    raw = str(name or "").strip()
+    aliases = []
+    candidates = [raw]
+
+    for separator in (" - ", ": "):
+        if separator in raw:
+            parts = raw.split(separator)
+            for part in parts:
+                part = part.strip()
+                if part:
+                    candidates.append(part)
+
+    for candidate in candidates:
+        normalized = _normalize_game_text(candidate)
+        if len(normalized) >= 4 and normalized not in aliases:
+            aliases.append(normalized)
+
+    return aliases
+
+
+def _find_installed_game_for_launch(text):
+    requested = _normalize_game_text(_strip_launch_text(text))
+    if not requested:
+        return None
+
+    games = _load_installed_games()
+    games.sort(key=lambda item: len(str(item.get("name") or "")), reverse=True)
+
+    for game in games:
+        normalized_name = _normalize_game_text(game.get("name"))
+        if normalized_name and normalized_name == requested:
+            return game
+
+    for game in games:
+        for alias in _game_launch_aliases(game.get("name")):
+            if alias == requested:
+                return game
+
+    padded_requested = " %s " % requested
+    for game in games:
+        normalized_name = _normalize_game_text(game.get("name"))
+        if len(requested) >= 6 and normalized_name and padded_requested in (" %s " % normalized_name):
+            return game
+
+    return None
+
+
+def _launch_quick_label(game):
+    name = str((game or {}).get("name") or "").strip()
+    return "Launch %s" % _button_label(name, limit=31)
+
+
+def _is_launch_intent(text):
+    token = str(text or "").lower().strip()
+    compact = " ".join(token.split())
+    launch_terms = ("launch", "play", "start", "load", "boot", "run")
+    for term in launch_terms:
+        if (compact == term or compact.startswith(term + " ") or
+                compact.startswith("please " + term + " ") or
+                compact.startswith("can you " + term + " ") or
+                compact.startswith("could you " + term + " ") or
+                compact.startswith("i want to " + term + " ")):
+            return True
+
+    return compact in ("yes", "yes please", "do it", "go ahead", "sure", "launch it", "play it")
+
+
+def _launch_game_from_state(state, text=""):
+    launch_games = []
+    if isinstance(state, dict):
+        launch_games = _game_state_list(state.get("launch_games"))
+        seen = {}
+        for game in launch_games:
+            seen[_normalize_path(game.get("path")) or _normalize_game_text(game.get("name"))] = True
+        for game in _game_state_list(state.get("launch_game")):
+            key = _normalize_path(game.get("path")) or _normalize_game_text(game.get("name"))
+            if key and key not in seen:
+                seen[key] = True
+                launch_games.append(game)
+
+    if launch_games:
+        clean_text = _clean_quick_ask(text).lower()
+        normalized_text = " %s " % _normalize_game_text(text)
+
+        for game in launch_games:
+            if clean_text == _launch_quick_label(game).lower():
+                return game
+
+        for game in launch_games:
+            normalized_name = _normalize_game_text(game.get("name"))
+            if normalized_name and (
+                (" %s " % normalized_name) in normalized_text or
+                normalized_text.strip() == normalized_name
+            ):
+                return game
+
+        if len(launch_games) == 1 and _is_launch_intent(text):
+            return launch_games[0]
+
+    if _is_launch_intent(text):
+        requested = _find_installed_game_for_launch(text) or _find_installed_game_in_text(text)
+        if requested:
+            return requested
+
+    return None
+
+
+def _launch_installed_game(game):
+    name = str((game or {}).get("name") or "").strip()
+    path = str((game or {}).get("path") or "").strip()
+    if not name or not path:
+        xbmcgui.Dialog().ok("Cortana Chat", "I could not find that game path.")
+        return False
+
+    try:
+        xbmc.executebuiltin("SetVolume(100,false)")
+    except Exception:
+        pass
+
+    _log("Launching installed game: %s -> %s" % (name, path))
+    xbmc.executebuiltin("Notification(Cortana Chat, Launching %s, 2000)" % _button_label(name, limit=32))
+    xbmc.executebuiltin("XBMC.RunXBE(%s)" % path)
+    return True
+
+
+def _game_recommendation_key(game):
+    return _normalize_path((game or {}).get("path")) or _normalize_game_text((game or {}).get("name"))
+
+
+def _dedupe_recommendation_games(games):
+    values = []
+    seen = {}
+    for game in list(games or []):
+        if not isinstance(game, dict):
+            continue
+        key = _game_recommendation_key(game)
+        name = str(game.get("name") or "").strip()
+        path = str(game.get("path") or "").strip()
+        if not key or not name or not path or key in seen:
+            continue
+        seen[key] = True
+        values.append(game)
+    return values
+
+
+def _recent_game_recommendations(state):
+    values = []
+    raw_values = []
+    if isinstance(state, dict) and isinstance(state.get("recent_game_recommendations"), list):
+        raw_values = state.get("recent_game_recommendations") or []
+    seen = {}
+    for value in raw_values:
+        key = str(value or "").strip().lower()
+        if key and key not in seen:
+            seen[key] = True
+            values.append(key)
+    return values
+
+
+def _pick_game_recommendations(state, count=2):
+    games = _dedupe_recommendation_games(_load_installed_games())
+    if not games:
+        return [], _recent_game_recommendations(state)
+
+    recent = _recent_game_recommendations(state)
+    blocked = {}
+    for key in recent:
+        blocked[key] = True
+
+    available = []
+    for game in games:
+        key = _game_recommendation_key(game)
+        if key and key not in blocked:
+            available.append(game)
+
+    if len(available) < count:
+        available = list(games)
+        recent = []
+
+    random.shuffle(available)
+    selected = available[:count]
+    selected_keys = []
+    for game in selected:
+        key = _game_recommendation_key(game)
+        if key and key not in selected_keys:
+            selected_keys.append(key)
+
+    recent = selected_keys + [key for key in recent if key not in selected_keys]
+    try:
+        max_recent = min(max(RECENT_GAME_RECOMMENDATION_LIMIT, count), max(len(games), count))
+    except Exception:
+        max_recent = RECENT_GAME_RECOMMENDATION_LIMIT
+
+    return selected, recent[:max_recent]
+
+
+def _is_tater_tube_action(text):
+    token = _normalize_game_text(text)
+    return token in ("watch tater tube", "open tater tube", "tater tube")
+
+
+def _is_quick_asks_action(text):
+    token = _normalize_game_text(text)
+    return token in ("quick asks", "cortana quick asks", "preset quick asks")
+
+
+def _open_tater_tube_menu():
+    _log("Opening Tater Tube menu from Cortana")
+    xbmc.executebuiltin("RunScript(%s,Open)" % TATER_TUBE_SCRIPT_PATH)
+    return True
+
+
+def _cortana_home_greeting():
+    context = _local_time_context()
+    time_of_day = str(context.get("time_of_day") or "").strip()
+    if time_of_day in ("morning", "afternoon", "evening"):
+        return "Good %s, welcome back" % time_of_day
+    return "Welcome back"
+
+
+def _game_reply_name(game):
+    return _button_label(str((game or {}).get("name") or "").strip(), limit=26)
+
+
+def _build_cortana_home_menu_state():
+    previous_state = _load_overlay_state()
+    games, recent = _pick_game_recommendations(previous_state, LAUNCH_QUICK_ASK_COUNT)
+    game_names = [_game_reply_name(game) for game in games if _game_reply_name(game)]
+
+    if len(game_names) >= 2:
+        reply = (
+            "%s. You should try %s or %s. "
+            "For a show, open Tater Tube."
+        ) % (_cortana_home_greeting(), game_names[0], game_names[1])
+    elif len(game_names) == 1:
+        reply = (
+            "%s. You should try %s. "
+            "For a show, open Tater Tube."
+        ) % (_cortana_home_greeting(), game_names[0])
+    else:
+        reply = "%s. For a show, open Tater Tube, or choose Quick Asks." % _cortana_home_greeting()
+
+    quick_asks = []
+    for game in games[:LAUNCH_QUICK_ASK_COUNT]:
+        quick_asks.append(_launch_quick_label(game))
+    quick_asks.append(WATCH_TATER_TUBE_LABEL)
+    quick_asks.append(QUICK_ASKS_LABEL)
+
+    return {
+        "reply": reply,
+        "quick_asks": quick_asks[:QUICK_ASK_COUNT],
+        "history": [],
+        "launch_game": games[0] if games else None,
+        "launch_games": games[:LAUNCH_QUICK_ASK_COUNT],
+        "recent_game_recommendations": recent,
+        "menu_mode": "home",
+    }
+
+
+def _with_launch_quick_ask(quick_asks, games):
+    launch_games = _game_state_list(games)
+    if not launch_games:
+        return list(quick_asks or [])[:QUICK_ASK_COUNT]
+
+    values = []
+    for game in launch_games[:LAUNCH_QUICK_ASK_COUNT]:
+        launch_label = _launch_quick_label(game)
+        if launch_label and launch_label not in values:
+            values.append(launch_label)
+
+    for item in list(quick_asks or []):
+        label = _clean_quick_ask(item)
+        if not label:
+            continue
+        if label.lower().startswith("launch"):
+            continue
+        if label not in values:
+            values.append(label)
+        if len(values) >= QUICK_ASK_COUNT:
+            break
+
+    for fallback in _fallback_quick_asks("", ""):
+        if len(values) >= QUICK_ASK_COUNT:
+            break
+        if fallback not in values:
+            values.append(fallback)
+
+    return values[:QUICK_ASK_COUNT]
 
 
 def _cortana_result(reply="", quick_asks=None, response_obj=None):
@@ -295,6 +1124,26 @@ def _is_background_video_file(path):
     return _normalize_path(path) == _normalize_path(BG_VIDEO_PATH)
 
 
+def _set_xbmc_volume(percent, reason):
+    try:
+        value = int(percent)
+    except Exception:
+        return False
+
+    if value < 0:
+        value = 0
+    if value > 100:
+        value = 100
+
+    try:
+        xbmc.executebuiltin("SetVolume(%d,false)" % value)
+        _log("Set volume to %d%% for %s" % (value, reason))
+        return True
+    except Exception as e:
+        _log("Unable to set volume for %s: %s" % (reason, e))
+        return False
+
+
 def _toggle_player_pause():
     try:
         player = xbmc.Player()
@@ -345,6 +1194,8 @@ def _resume_background_video_after_tts(paused):
             _log("Not resuming background video; another file is active: %s" % current_file)
             return
 
+        _set_xbmc_volume(BG_VIDEO_VOLUME, "background video")
+
         if _toggle_player_pause():
             _log("Resumed background video after TTS")
 
@@ -378,20 +1229,25 @@ def _fetch_tts_from_url(url):
     if not audio_url:
         return ""
 
-    try:
-        req = urllib2.Request(audio_url, None, _request_headers())
-        socket.setdefaulttimeout(HTTP_TIMEOUT_SECONDS)
-        resp = urllib2.urlopen(req, timeout=HTTP_TIMEOUT_SECONDS)
+    for attempt in range(1, TTS_RETRY_COUNT + 1):
+        resp = None
         try:
+            req = urllib2.Request(audio_url, None, _request_headers())
+            socket.setdefaulttimeout(TTS_HTTP_TIMEOUT_SECONDS)
+            resp = urllib2.urlopen(req, timeout=TTS_HTTP_TIMEOUT_SECONDS)
             return _save_tts_wav(resp.read())
+        except Exception as e:
+            _log("TTS URL fetch failed (attempt %d/%d): %s" % (attempt, TTS_RETRY_COUNT, e))
+            if attempt < TTS_RETRY_COUNT:
+                time.sleep(TTS_RETRY_DELAY_SECONDS)
         finally:
             try:
-                resp.close()
+                if resp:
+                    resp.close()
             except Exception:
                 pass
-    except Exception as e:
-        _log("TTS URL fetch failed: %s" % e)
-        return ""
+
+    return ""
 
 
 def _synthesize_tts(reply):
@@ -410,20 +1266,25 @@ def _synthesize_tts(reply):
         _log("TTS JSON error: %s" % e)
         return ""
 
-    try:
-        req = urllib2.Request(_tts_preview_url(), data, _request_headers("application/json"))
-        socket.setdefaulttimeout(HTTP_TIMEOUT_SECONDS)
-        resp = urllib2.urlopen(req, timeout=HTTP_TIMEOUT_SECONDS)
+    for attempt in range(1, TTS_RETRY_COUNT + 1):
+        resp = None
         try:
+            req = urllib2.Request(_tts_preview_url(), data, _request_headers("application/json"))
+            socket.setdefaulttimeout(TTS_HTTP_TIMEOUT_SECONDS)
+            resp = urllib2.urlopen(req, timeout=TTS_HTTP_TIMEOUT_SECONDS)
             return _save_tts_wav(resp.read())
+        except Exception as e:
+            _log("TTS synthesis failed (attempt %d/%d): %s" % (attempt, TTS_RETRY_COUNT, e))
+            if attempt < TTS_RETRY_COUNT:
+                time.sleep(TTS_RETRY_DELAY_SECONDS)
         finally:
             try:
-                resp.close()
+                if resp:
+                    resp.close()
             except Exception:
                 pass
-    except Exception as e:
-        _log("TTS synthesis failed: %s" % e)
-        return ""
+
+    return ""
 
 
 def _play_tts_file(path):
@@ -435,6 +1296,8 @@ def _play_tts_file(path):
     try:
         duration = _wav_duration_seconds(path)
         paused_bgvideo = _pause_background_video_for_tts()
+        if paused_bgvideo:
+            _set_xbmc_volume(TTS_VOLUME, "Cortana TTS")
 
         _log("Playing TTS WAV: %s" % path)
         if hasattr(xbmc, "playSFX"):
@@ -556,7 +1419,14 @@ def _show_popup(dialog, title, text):
 def _load_overlay_state():
     try:
         if not os.path.exists(CORTANA_STATE_FILE):
-            return {"reply": "", "quick_asks": _fallback_quick_asks(), "history": []}
+            return {
+                "reply": "",
+                "quick_asks": _fallback_quick_asks(),
+                "history": [],
+                "launch_game": None,
+                "launch_games": [],
+                "recent_game_recommendations": [],
+            }
         f = open(CORTANA_STATE_FILE, "r")
         try:
             raw = f.read()
@@ -569,10 +1439,25 @@ def _load_overlay_state():
             "reply": str(parsed.get("reply") or ""),
             "quick_asks": _extract_quick_asks(parsed, "", str(parsed.get("reply") or "")),
             "history": parsed.get("history") if isinstance(parsed.get("history"), list) else [],
+            "launch_game": parsed.get("launch_game") if isinstance(parsed.get("launch_game"), dict) else None,
+            "launch_games": _game_state_list(parsed.get("launch_games")),
+            "recent_game_recommendations": (
+                parsed.get("recent_game_recommendations")
+                if isinstance(parsed.get("recent_game_recommendations"), list)
+                else []
+            ),
+            "menu_mode": str(parsed.get("menu_mode") or ""),
         }
     except Exception as e:
         _log("Overlay state load failed: %s" % e)
-        return {"reply": "", "quick_asks": _fallback_quick_asks(), "history": []}
+        return {
+            "reply": "",
+            "quick_asks": _fallback_quick_asks(),
+            "history": [],
+            "launch_game": None,
+            "launch_games": [],
+            "recent_game_recommendations": [],
+        }
 
 
 def _save_overlay_state(state):
@@ -615,14 +1500,15 @@ def _set_overlay_property(name, value):
 
 def _refresh_overlay_properties(state):
     reply = str(state.get("reply") or "")
-    quick_asks = list(state.get("quick_asks") or [])[:3]
+    quick_asks = list(state.get("quick_asks") or [])[:QUICK_ASK_COUNT]
     history = list(state.get("history") or [])[:4]
+    fallback_asks = _fallback_quick_asks()
 
     for idx, line in enumerate(_overlay_lines(reply), 1):
         _set_overlay_property("Cortana.Reply%s" % idx, line)
 
-    for idx in range(3):
-        text = quick_asks[idx] if idx < len(quick_asks) else _fallback_quick_asks()[idx]
+    for idx in range(QUICK_ASK_COUNT):
+        text = quick_asks[idx] if idx < len(quick_asks) else fallback_asks[idx]
         _set_overlay_property("Cortana.Quick%s" % (idx + 1), _button_label(text, limit=38))
 
     for idx in range(4):
@@ -641,8 +1527,33 @@ def _open_cortana_skin_overlay(state):
 
 def _show_result_on_skin_overlay(result, history, user_text=""):
     reply = str(result.get("reply") or "")
-    quick_asks = list(result.get("quick_asks") or _fallback_quick_asks(user_text, reply))[:3]
-    state = {"reply": reply, "quick_asks": quick_asks, "history": list(history or [])[:60]}
+    launch_games = _find_installed_games_in_text(reply, LAUNCH_QUICK_ASK_COUNT)
+    seen_launch_games = {}
+    for game in launch_games:
+        seen_launch_games[_normalize_path(game.get("path")) or _normalize_game_text(game.get("name"))] = True
+
+    quick_asks = list(result.get("quick_asks") or _fallback_quick_asks(user_text, reply))[:QUICK_ASK_COUNT]
+    for ask in quick_asks:
+        game = _find_installed_game_for_launch(ask)
+        if not game:
+            continue
+        key = _normalize_path(game.get("path")) or _normalize_game_text(game.get("name"))
+        if key and key not in seen_launch_games:
+            seen_launch_games[key] = True
+            launch_games.append(game)
+        if len(launch_games) >= LAUNCH_QUICK_ASK_COUNT:
+            break
+
+    launch_games = launch_games[:LAUNCH_QUICK_ASK_COUNT]
+    launch_game = launch_games[0] if launch_games else None
+    quick_asks = _with_launch_quick_ask(quick_asks, launch_games)
+    state = {
+        "reply": reply,
+        "quick_asks": quick_asks,
+        "history": list(history or [])[:60],
+        "launch_game": launch_game,
+        "launch_games": launch_games,
+    }
     _open_cortana_skin_overlay(state)
     _play_reply_tts(reply, result.get("response_obj"))
     return state
@@ -710,7 +1621,7 @@ def _set_api_key(dialog):
         dialog.ok("Cortana Chat", "Failed to save API key.")
 
 
-def call_cortana_result(message, auto_tts=True):
+def call_cortana_result(message, auto_tts=True, include_game_context=True):
     """
     Send a message to the XBMC bridge endpoint and return reply text plus quick asks.
     """
@@ -723,10 +1634,16 @@ def call_cortana_result(message, auto_tts=True):
         "session_id": "xbmc_%s" % profile_name,
         "device_id": "xbmc4xbox",
         "area_id": "xbmc",
+        "platform_context": "original Xbox running XBMC4Xbox",
         "include_tts": True,
         "tts_format": "wav",
         "include_quick_asks": True,
     }
+    payload.update(_local_time_context())
+
+    installed_games = _installed_games_payload(message) if include_game_context else []
+    if installed_games:
+        payload["installed_games"] = installed_games
 
     try:
         data = json.dumps(payload)
@@ -734,7 +1651,13 @@ def call_cortana_result(message, auto_tts=True):
         return _cortana_result("JSON error: %s" % e)
 
     _log("Sending to Cortana URL: %s" % CORTANA_API_URL)
-    _log("Payload: %s" % data)
+    try:
+        log_payload = dict(payload)
+        if installed_games:
+            log_payload["installed_games"] = "%d installed games" % len(installed_games)
+        _log("Payload: %s" % json.dumps(log_payload))
+    except Exception:
+        _log("Payload prepared")
 
     headers = _request_headers("application/json")
 
@@ -797,29 +1720,26 @@ def call_cortana(message):
 
 def display_cortana_chat():
     """
-    Full Cortana chat experience:
-    - Skin XML Cortana overlay
-    - Dynamic quick replies from Tater
-    - Ask Cortana keyboard action
-    - Preset quick asks, news, and settings actions
+    Lightweight Cortana home menu:
+    - Two local installed-game recommendations that can launch immediately
+    - One Tater Tube entry for movie and TV recommendations from local Tater
     """
-    history = []
-
     try:
-        greeting_prompt = (
-            "Greet the user as Cortana from the original Xbox. "
-            "Ask if they want help controlling lights, finding a game, or using tools. "
-            "Use one warm, confident sentence under 22 words with no markdown."
-        )
-        current = call_cortana_result(greeting_prompt, auto_tts=False)
+        state = _build_cortana_home_menu_state()
     except Exception as e:
-        _log("Startup greeting failed: %s" % e)
-        current = _cortana_result("Cortana is online. Ask me about lights, games, or tools.")
+        _log("Startup menu failed: %s" % e)
+        state = {
+            "reply": "Cortana is online. Tater Tube has movie and TV picks.",
+            "quick_asks": [WATCH_TATER_TUBE_LABEL, QUICK_ASKS_LABEL],
+            "history": [],
+            "launch_game": None,
+            "launch_games": [],
+            "recent_game_recommendations": [],
+            "menu_mode": "home",
+        }
 
-    if current.get("reply"):
-        history.insert(0, "Cortana: %s" % current.get("reply"))
-
-    _show_result_on_skin_overlay(current, history)
+    _open_cortana_skin_overlay(state)
+    _play_reply_tts(state.get("reply"))
 
 
 def _send_overlay_message(text):
@@ -828,6 +1748,11 @@ def _send_overlay_message(text):
         return
 
     state = _load_overlay_state()
+    launch_game = _launch_game_from_state(state, text)
+    if launch_game:
+        _launch_installed_game(launch_game)
+        return
+
     history = list(state.get("history") or [])
     xbmc.executebuiltin("Notification(Cortana Chat, Working..., 1500)")
     result = call_cortana_result(text, auto_tts=False)
@@ -845,11 +1770,26 @@ def handle_overlay_action(action):
     token = str(action or "").lower()
     state = _load_overlay_state()
 
-    if token in ("quick1", "quick2", "quick3"):
-        idx = int(token[-1]) - 1
-        quick_asks = list(state.get("quick_asks") or [])
-        if 0 <= idx < len(quick_asks):
-            _send_overlay_message(quick_asks[idx])
+    if token.startswith("quick") and token[5:].isdigit():
+        idx = int(token[5:]) - 1
+        if 0 <= idx < QUICK_ASK_COUNT:
+            quick_asks = list(state.get("quick_asks") or [])
+            if idx < len(quick_asks):
+                if _is_tater_tube_action(quick_asks[idx]):
+                    _open_tater_tube_menu()
+                    return
+                if _is_quick_asks_action(quick_asks[idx]):
+                    display_cortana_quick_asks()
+                    return
+                launch_game = _launch_game_from_state(state, quick_asks[idx])
+                if launch_game:
+                    _launch_installed_game(launch_game)
+                    return
+                _send_overlay_message(quick_asks[idx])
+        return
+
+    if token in ("tatertube", "tater_tube", "watchtube"):
+        _open_tater_tube_menu()
         return
 
     if token == "ask":
@@ -933,7 +1873,8 @@ if __name__ == "__main__":
                 display_cortana_quick_asks()
             elif arg == "news":
                 display_cortana_news()
-            elif arg in ("quick1", "quick2", "quick3", "ask", "presets", "settings", "overlaynews"):
+            elif ((arg.startswith("quick") and arg[5:].isdigit()) or
+                    arg in ("ask", "presets", "settings", "overlaynews", "tatertube", "tater_tube", "watchtube")):
                 handle_overlay_action(arg)
             else:
                 display_cortana_chat()

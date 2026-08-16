@@ -133,13 +133,13 @@
 					<align>left</align>
 					<aligny>center</aligny>
 					<textcolor>orange</textcolor>
-					<label>Quick replies</label>
+					<label>Menu</label>
 				</control>
 				<control type="button" id="2101">
 					<posx>0</posx>
-					<posy>386</posy>
+					<posy>382</posy>
 					<width>340</width>
-					<height>44</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -156,9 +156,9 @@
 				</control>
 				<control type="button" id="2102">
 					<posx>0</posx>
-					<posy>434</posy>
+					<posy>420</posy>
 					<width>340</width>
-					<height>44</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -175,9 +175,9 @@
 				</control>
 				<control type="button" id="2103">
 					<posx>0</posx>
-					<posy>482</posy>
+					<posy>458</posy>
 					<width>340</width>
-					<height>44</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -188,15 +188,54 @@
 					<onleft>Dialog.Close(9016)</onleft>
 					<onright>2103</onright>
 					<onup>2102</onup>
-					<ondown>2201</ondown>
+					<ondown>2104</ondown>
 					<onclick>Dialog.Close(9016)</onclick>
 					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick3)</onclick>
 				</control>
+				<control type="button" id="2104">
+					<posx>0</posx>
+					<posy>496</posy>
+					<width>340</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<textoffsetx>18</textoffsetx>
+					<label>$INFO[Window(10000).Property(Cortana.Quick4)]</label>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2104</onright>
+					<onup>2103</onup>
+					<ondown>2205</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick4)</onclick>
+				</control>
+				<control type="button" id="2105">
+					<posx>0</posx>
+					<posy>534</posy>
+					<width>340</width>
+					<height>36</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<focusedcolor>black</focusedcolor>
+					<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+					<textoffsetx>18</textoffsetx>
+					<label>$INFO[Window(10000).Property(Cortana.Quick5)]</label>
+					<visible>false</visible>
+					<onleft>Dialog.Close(9016)</onleft>
+					<onright>2105</onright>
+					<onup>2104</onup>
+					<ondown>2201</ondown>
+					<onclick>Dialog.Close(9016)</onclick>
+					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Quick5)</onclick>
+				</control>
 				<control type="button" id="2201">
 					<posx>0</posx>
-					<posy>540</posy>
+					<posy>584</posy>
 					<width>165</width>
-					<height>40</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -204,18 +243,19 @@
 					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
 					<align>center</align>
 					<label>Ask</label>
+					<visible>false</visible>
 					<onleft>2202</onleft>
 					<onright>2202</onright>
-					<onup>2103</onup>
+					<onup>2105</onup>
 					<ondown>2203</ondown>
 					<onclick>Dialog.Close(9016)</onclick>
 					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Ask)</onclick>
 				</control>
 				<control type="button" id="2202">
 					<posx>175</posx>
-					<posy>540</posy>
+					<posy>584</posy>
 					<width>165</width>
-					<height>40</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -223,18 +263,19 @@
 					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
 					<align>center</align>
 					<label>Presets</label>
+					<visible>false</visible>
 					<onleft>2201</onleft>
 					<onright>2201</onright>
-					<onup>2103</onup>
+					<onup>2105</onup>
 					<ondown>2204</ondown>
 					<onclick>Dialog.Close(9016)</onclick>
 					<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\cortana\default.py,Presets)</onclick>
 				</control>
 				<control type="button" id="2203">
 					<posx>0</posx>
-					<posy>588</posy>
+					<posy>624</posy>
 					<width>165</width>
-					<height>40</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -242,6 +283,7 @@
 					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
 					<align>center</align>
 					<label>News</label>
+					<visible>false</visible>
 					<onleft>2204</onleft>
 					<onright>2204</onright>
 					<onup>2201</onup>
@@ -251,9 +293,9 @@
 				</control>
 				<control type="button" id="2204">
 					<posx>175</posx>
-					<posy>588</posy>
+					<posy>624</posy>
 					<width>165</width>
-					<height>40</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -261,6 +303,7 @@
 					<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
 					<align>center</align>
 					<label>Settings</label>
+					<visible>false</visible>
 					<onleft>2203</onleft>
 					<onright>2203</onright>
 					<onup>2202</onup>
@@ -270,9 +313,9 @@
 				</control>
 				<control type="button" id="2205">
 					<posx>0</posx>
-					<posy>636</posy>
+					<posy>548</posy>
 					<width>340</width>
-					<height>40</height>
+					<height>36</height>
 					<font>font13</font>
 					<textcolor>white</textcolor>
 					<focusedcolor>black</focusedcolor>
@@ -282,7 +325,7 @@
 					<label>Close</label>
 					<onleft>Dialog.Close(9016)</onleft>
 					<onright>2205</onright>
-					<onup>2203</onup>
+					<onup>2104</onup>
 					<ondown>2101</ondown>
 					<onclick>Dialog.Close(9016)</onclick>
 				</control>
