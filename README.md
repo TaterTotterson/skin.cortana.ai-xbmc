@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://taterassistant.com">
-    <img src="media/tater-xbox-mascot.png" alt="Tater mascot playing an original Xbox" width="720"/>
+    <img src="media/tater-xbox-mascot.png" alt="Tater Xbox logo" width="720"/>
   </a>
 </div>
 
@@ -13,7 +13,7 @@
 Cortana AI is a Tater-powered skin for the original Xbox. It brings assistant chat, TTS replies, quick asks, game recommendations, Tater Tube media browsing, live weather, and animated background video into an XBMC4Xbox dashboard.
 
 <p align="center">
-  <img src="media/517847499-6804138f-4a4c-451d-98d6-8b1fd7445966.png" alt="Cortana AI dashboard screenshot" width="720"/>
+  <img src="media/517847504-cdbd189f-23f2-4ab0-a64a-ecb486f2ba82.png" alt="Cortana AI dashboard screenshot" width="720"/>
 </p>
 
 ## Highlights
