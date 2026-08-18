@@ -251,9 +251,9 @@
 							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
 						</item>
 						<item>
-							<label>31103</label>
-							<onclick>ActivateWindow(Programs,Demos,return)</onclick>
+							<label>Stellar Net ISO</label>
 							<icon>special://skin/button_icons/icon-opticalmedia.png</icon>
+							<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,BrowseISO)</onclick>
 							<thumb>-</thumb>
 							<visible>!Skin.HasSetting(AppsBlade_HideGames)</visible>
 						</item>

@@ -1,3 +1,12 @@
+[B]Version 2.17[/B]
+
+- Added Stellar Net ISO launching for Project Stellar net0 SMB ISO/CSO games.
+- Added first-run SMB share setup, saved ISO folder browsing, and attach.ini generation.
+- Bundled the official MakeMHz stellar-attach helper with GPL notice and checksum.
+- Added a Stellar-themed file-browser preview image.
+- Replaced the Games blade Demos shortcut with Stellar Net ISO.
+- Moved Stellar Settings to the Settings blade in place of legacy XBMC Weather Settings.
+
 [B]Version 2.16[/B]
 
 - Added the Tater Tube blade with paired-player browsing for Tube TV, Stream, Local, and Music.

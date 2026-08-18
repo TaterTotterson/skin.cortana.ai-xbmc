@@ -1,0 +1,16 @@
+stellar-attach / attach.xbe
+===========================
+
+This skin includes an unmodified binary copy of attach.xbe from the
+MakeMHz stellar-attach project.
+
+Project: https://github.com/MakeMHz/stellar-attach
+Bundled release: v1.1.0
+Bundled asset: https://github.com/MakeMHz/stellar-attach/releases/download/v1.1.0/attach.xbe
+License: GNU General Public License v2.0
+License text: stellar-attach-LICENSE-GPL-2.0.txt
+SHA-256: d7f01cdc64ab1469800fc57ffef9b34bb0451cf1f31423e73eca04d173eec801
+
+attach.xbe is used as a separate helper executable for Project Stellar NetISO
+mounting. The Cortana AI skin writes attach.ini beside the helper and launches
+attach.xbe through XBMC.

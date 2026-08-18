@@ -111,7 +111,17 @@
 					<width>400</width>
 					<height>180</height>
 					<aspectratio>keep</aspectratio>
+					<visible>IsEmpty(Window(10000).Property(TaterStellar.FileBrowserMode))</visible>
 					<texture background="true">$INFO[ListItem.Icon]</texture>
+				</control>
+				<control type="image">
+					<posx>240</posx>
+					<posy>470</posy>
+					<width>400</width>
+					<height>180</height>
+					<aspectratio>keep</aspectratio>
+					<visible>!IsEmpty(Window(10000).Property(TaterStellar.FileBrowserMode))</visible>
+					<texture>special://skin/media/stellar-netiso-mascot.png</texture>
 				</control>
 				<control type="panel" id="450">
 					<posx>0</posx>

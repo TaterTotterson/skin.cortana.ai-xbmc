@@ -1,0 +1,346 @@
+<window id="1114">
+	<defaultcontrol always="true">2201</defaultcontrol>
+	<previouswindow>home</previouswindow>
+	<allowoverlay>no</allowoverlay>
+	<controls>
+		<include condition="!Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
+		<control type="group">
+			<include>CommonAppsBackground</include>
+		</control>
+		<include condition="Skin.HasSetting(DontBlendBackground)">CommonVideoVizBackground</include>
+		<control type="group">
+			<control type="image">
+				<description>Background</description>
+				<posx>105</posx>
+				<posy>0</posy>
+				<width>50</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-left-ws.png</texture>
+			</control>
+			<control type="image">
+				<description>Background</description>
+				<posx>155r</posx>
+				<posy>0</posy>
+				<width>50</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-right-ws.png</texture>
+			</control>
+			<control type="image">
+				<description>Background</description>
+				<posx>155</posx>
+				<posy>0</posy>
+				<width>970</width>
+				<height>720</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>background-overlay-blackwash-centertile-ws.png</texture>
+			</control>
+		</control>
+		<control type="group">
+			<posx>180</posx>
+			<animation effect="fade" time="HomeVisibleFadeAnimationSpeed">WindowOpen</animation>
+			<control type="label">
+				<description>Header label</description>
+				<posx>0</posx>
+				<label>Stellar Settings</label>
+				<include>HeaderTextCommons</include>
+			</control>
+			<control type="label">
+				<description>Time label</description>
+				<posx>930</posx>
+				<include>ClockTextCommons</include>
+			</control>
+			<control type="label">
+				<posx>20</posx>
+				<posy>94</posy>
+				<width>620</width>
+				<height>36</height>
+				<font>font30</font>
+				<aligny>center</aligny>
+				<textcolor>orange</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Title)]</label>
+			</control>
+			<control type="label">
+				<posx>20</posx>
+				<posy>130</posy>
+				<width>880</width>
+				<height>26</height>
+				<font>font13</font>
+				<aligny>center</aligny>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Subtitle)]</label>
+			</control>
+			<control type="image">
+				<description>Divider</description>
+				<posx>20</posx>
+				<posy>164</posy>
+				<width>900</width>
+				<height>2</height>
+				<texture>divider.png</texture>
+			</control>
+			<control type="button" id="2201">
+				<posx>20</posx>
+				<posy>180</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row1.Title)]</label>
+				<onup>2301</onup>
+				<ondown>2202</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select1)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>185</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row1.Detail)]</label>
+			</control>
+			<control type="button" id="2202">
+				<posx>20</posx>
+				<posy>222</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row2.Title)]</label>
+				<onup>2201</onup>
+				<ondown>2203</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select2)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>227</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row2.Detail)]</label>
+			</control>
+			<control type="button" id="2203">
+				<posx>20</posx>
+				<posy>264</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row3.Title)]</label>
+				<onup>2202</onup>
+				<ondown>2204</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select3)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>269</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row3.Detail)]</label>
+			</control>
+			<control type="button" id="2204">
+				<posx>20</posx>
+				<posy>306</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row4.Title)]</label>
+				<onup>2203</onup>
+				<ondown>2205</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select4)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>311</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row4.Detail)]</label>
+			</control>
+			<control type="button" id="2205">
+				<posx>20</posx>
+				<posy>348</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row5.Title)]</label>
+				<onup>2204</onup>
+				<ondown>2206</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select5)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>353</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row5.Detail)]</label>
+			</control>
+			<control type="button" id="2206">
+				<posx>20</posx>
+				<posy>390</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row6.Title)]</label>
+				<onup>2205</onup>
+				<ondown>2207</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select6)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>395</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row6.Detail)]</label>
+			</control>
+			<control type="button" id="2207">
+				<posx>20</posx>
+				<posy>432</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row7.Title)]</label>
+				<onup>2206</onup>
+				<ondown>2208</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select7)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>437</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row7.Detail)]</label>
+			</control>
+			<control type="button" id="2208">
+				<posx>20</posx>
+				<posy>474</posy>
+				<width>430</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row8.Title)]</label>
+				<onup>2207</onup>
+				<ondown>2301</ondown>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Select8)</onclick>
+			</control>
+			<control type="label">
+				<posx>472</posx>
+				<posy>479</posy>
+				<width>430</width>
+				<height>28</height>
+				<font>font13</font>
+				<textcolor>white2</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Row8.Detail)]</label>
+			</control>
+			<control type="label">
+				<posx>20</posx>
+				<posy>576</posy>
+				<width>900</width>
+				<height>24</height>
+				<font>font12</font>
+				<textcolor>orange</textcolor>
+				<label>$INFO[Window(10000).Property(TaterStellar.Status)]</label>
+			</control>
+			<control type="button" id="2301">
+				<posx>20</posx>
+				<posy>642</posy>
+				<width>185</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>Browse ISO</label>
+				<onup>2208</onup>
+				<ondown>2201</ondown>
+				<onright>2302</onright>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,BrowseISO)</onclick>
+			</control>
+			<control type="button" id="2302">
+				<posx>222</posx>
+				<posy>642</posy>
+				<width>185</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>Settings</label>
+				<onup>2208</onup>
+				<ondown>2201</ondown>
+				<onleft>2301</onleft>
+				<onright>2303</onright>
+				<onclick>RunScript(Q:\skin\skin.cortana.ai\scripts\stellar\default.py,Settings)</onclick>
+			</control>
+			<control type="button" id="2303">
+				<posx>424</posx>
+				<posy>642</posy>
+				<width>185</width>
+				<height>38</height>
+				<font>font13</font>
+				<textcolor>white</textcolor>
+				<focusedcolor>black</focusedcolor>
+				<texturefocus border="0,3,0,3">button-focus2.png</texturefocus>
+				<texturenofocus border="0,3,0,3">button-nofocus.png</texturenofocus>
+				<textoffsetx>18</textoffsetx>
+				<label>Close</label>
+				<onup>2208</onup>
+				<ondown>2201</ondown>
+				<onleft>2302</onleft>
+				<onclick>ActivateWindow(Home)</onclick>
+			</control>
+		</control>
+		<include>CommonDVDTray</include>
+	</controls>
+</window>
