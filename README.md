@@ -57,3 +57,9 @@ Open the orange Tater blade, choose **Check Update**, then **Install Update**. T
 ## Credits
 
 Built on JX720 and MC360 work by Jezz_X, Team Blackbolt, and faithvoid. Uses Open Sans by Steve Matteson. Stellar Net ISO uses the unmodified `attach.xbe` helper from MakeMHz `stellar-attach`; see `scripts/stellar/THIRD_PARTY_NOTICES.txt`.
+
+## License and trademarks
+
+See [LICENSE.txt](LICENSE.txt) for the terms that apply to this repository.
+
+The Tater name and logo are governed by the [Tater Trademark Policy](TRADEMARKS.md).
